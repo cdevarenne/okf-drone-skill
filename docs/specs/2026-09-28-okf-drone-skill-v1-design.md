@@ -126,6 +126,25 @@ airspace: {class: G, declared_by: operator}
 failsafes: {lost_link: RTL, low_battery: RTL, critical_battery: LAND, geofence_breach: RTL}
 ```
 
+A `specific` mission also declares the ARC facts (the `when` keys of `risk/arc`) and a `sora`
+block. A missing fact or block gives a gap for the SORA step that needs it.
+
+```yaml
+airspace:
+  class: G
+  declared_by: operator
+  atypical_airspace: false
+  above_fl600: false
+  airport_environment: false
+  above_500ft_agl: false     # the operational volume, not only the flight geography
+  mode_c_veil_or_tmz: false
+  controlled_airspace: false
+  over_urban_area: false
+sora:
+  mitigations: {m1a: low}    # risk/<id>: declared level of robustness (low | medium | high)
+  adjacent_area: {below_people_km2: 5000, assemblies: under-40k, shelter: true}
+```
+
 The schema is `.claude/skills/drone-mission-compliance/schemas/mission.schema.json` (Phase 2).
 Value sets that come from the bundle (mission types, population density bands, failsafe
 actions) are not in the schema; the pipeline checks them against the bundle.
@@ -137,20 +156,38 @@ DRN-02 records the matching PX4 parameter names in `failsafes/*.md`.
 
 ### 5.3 Check result (`validation.json`)
 
-`{check_id, status: pass|fail|gap, concept_id|null, evidence, message}`.
-`gap` has `concept_id: null` and names the missing concept.
+`{mission_id, checks: [{check_id, status: pass|fail|gap|not_applicable, concept_id|null,
+evidence, message}]}`.
+
+- A concept counts only if it has a `verified` entry by a person. An unverified concept is
+  treated as missing.
+- `gap` with `concept_id: null`: no verified concept governs the check; the message names it.
+- `gap` with a `concept_id`: the concept exists, but a declared input that it needs is missing
+  (for example `terrain: varied`, or an ARC fact); the message names the input.
+- `not_applicable`: the concept does not apply to this mission (for example the open-category
+  height limit on a specific-category mission).
 
 ### 5.4 Risk result (`risk.json`)
 
-Hazard matrix rows `{hazard_id, likelihood, severity, score, mitigations[], residual}`.
-SORA summary `{igrc, mitigations_applied[], final_grc, initial_arc, residual_arc, sail}`.
-Each value cites its concept. A missing or unverified table gives `"not_assessed"` plus a gap.
+`{mission_id, hazards: [...], sora: {...}, checks: [...]}`.
+
+Hazard matrix rows `{hazard_id, likelihood, severity, score, mitigations[], residual}`, one per
+verified hazard. `score` is likelihood x severity.
+SORA summary: `igrc`, `final_grc`, `initial_arc`, `residual_arc`, `tmpr`, `sail`,
+`containment`, `oso`, each `{value, concept_id}`, plus `mitigations_applied[]`. Only a
+`specific` mission is scored; for an `open` mission the summary is
+`{status: not_applicable}`. `checks` has one result per SORA step, in the §5.3 form.
+A value that cannot be found is `"not_assessed"` and has a gap; the steps after it are
+`"not_assessed"` too.
 
 ### 5.5 Decision
 
 - **GO:** all checks pass, no gaps.
 - **NO-GO:** at least one check fails.
 - **HOLD:** no fail, but at least one gap. A human must add knowledge or decide.
+
+The decision reads the checks in `validation.json` and in `risk.json`. `not_applicable` does
+not change it.
 
 ## 6. Pipeline
 
@@ -167,7 +204,12 @@ Each value cites its concept. A missing or unverified table gives `"not_assessed
    `regulations/easa-open` limit is from the closest point of the surface. With
    `terrain: flat`, the check compares the plan altitudes with the limit. With
    `terrain: varied`, v1 has no terrain data, so the check is a gap (HOLD).
-4. `score_risk`: hazard matrix from `hazards/`; SORA summary from `risk/` tables.
+4. `score_risk`: hazard matrix from `hazards/`; SORA summary from `risk/` tables, in step
+   order: iGRC (band row, left-most column that fits the UA; the small-UA rule), final GRC
+   (the declared mitigations in `sequence` order; the M1 floor), initial ARC (first matching
+   rule), residual ARC and TMPR (VLOS reduction), SAIL, containment (the first table that fits
+   the UA size, speed and declared shelter; the more stringent of the density and assembly
+   columns). The OSO step has no concept in v1, so a specific mission is always HOLD.
 5. `render_report`: fills the flight-plan template sections, the decision and the audit trail.
 
 ## 7. Seeded missions (`missions/SEEDED.yaml`)
