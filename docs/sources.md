@@ -6,14 +6,14 @@ A concept can cite only a document with status `read`.
 
 | Id | Document | Edition / date | URL | Needed for | Status |
 |---|---|---|---|---|---|
-| S1 | Commission Implementing Regulation (EU) 2019/947 | consolidated text | https://eur-lex.europa.eu/eli/reg_impl/2019/947/oj | `regulations/easa-open`, `regulations/easa-specific-sora` | unread |
-| S2 | EASA ED Decision 2025/018/R, Annex (AMC & GM to Reg. 2019/947, Issue 1, Amendment 4; SORA 2.5) | 15 Sep 2025; corrigendum 12 Dec 2025 | https://easa.europa.eu/en/document-library/agency-decisions/ed-decision-2025018r | applicability and transition dates | unread |
-| S3 | EASA Easy Access Rules for UAS | revision of June 2026 | https://www.easa.europa.eu/en/document-library/easy-access-rules/easy-access-rules-unmanned-aircraft-systems-regulations-eu | consolidated AMC text | unread |
-| S4 | JARUS SORA 2.5 Main Body (JAR_doc_25) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf | `risk/igrc`, `risk/arc`, `risk/sail`, `risk/containment`, M1(A)/M1(B)/M1(C), M2, M3 status, OSO list | unread |
-| S5 | JARUS SORA 2.5 Annex E (JAR_doc_28) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Annex-E-Release.JAR_doc_28pdf.pdf | OSO robustness | unread |
-| S6 | JARUS SORA 2.5 Annex F (JAR_doc_29) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Annex-F-Release.JAR_doc_29pdf.pdf | critical-area model for non-typical UA (not needed for the v1 iGRC table) | unread |
-| S7 | PX4 parameter reference | main | https://docs.px4.io/main/en/advanced_config/parameter_reference.html | `failsafes/*` parameter names | unread |
-| S8 | QGroundControl plan file format | master | https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/file_formats/plan.html | `platform/qgc-plan-format`, `tests/fixtures/qgc/plan.schema.json` | read 2026-09-28 by agent; owner to confirm |
+| S1 | Commission Implementing Regulation (EU) 2019/947 | consolidated text | https://eur-lex.europa.eu/eli/reg_impl/2019/947/oj | `regulations/easa-open`, `regulations/easa-specific-sora` | read 2026-09-28 |
+| S2 | EASA ED Decision 2025/018/R, Annex (AMC & GM to Reg. 2019/947, Issue 1, Amendment 4; SORA 2.5) | 15 Sep 2025; corrigendum 12 Dec 2025 | https://easa.europa.eu/en/document-library/agency-decisions/ed-decision-2025018r | applicability and transition dates | read 2026-09-28 |
+| S3 | EASA Easy Access Rules for UAS | revision of June 2026 | https://www.easa.europa.eu/en/document-library/easy-access-rules/easy-access-rules-unmanned-aircraft-systems-regulations-eu | consolidated AMC text | read 2026-09-28 |
+| S4 | JARUS SORA 2.5 Main Body (JAR_doc_25) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf | `risk/igrc`, `risk/arc`, `risk/sail`, `risk/containment`, M1(A)/M1(B)/M1(C), M2, M3 status, OSO list | read 2026-09-28 |
+| S5 | JARUS SORA 2.5 Annex E (JAR_doc_28) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Annex-E-Release.JAR_doc_28pdf.pdf | OSO robustness | read 2026-09-28 |
+| S6 | JARUS SORA 2.5 Annex F (JAR_doc_29) | 2.5 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Annex-F-Release.JAR_doc_29pdf.pdf | critical-area model for non-typical UA (not needed for the v1 iGRC table) | read 2026-09-28 |
+| S7 | PX4 parameter reference | main | https://docs.px4.io/main/en/advanced_config/parameter_reference.html | `failsafes/*` parameter names | read 2026-09-28 |
+| S8 | QGroundControl plan file format | master | https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/file_formats/plan.html | `platform/qgc-plan-format`, `tests/fixtures/qgc/plan.schema.json` | read 2026-09-28 by agent; read 2026-09-28 by cdevarenne |
 
 ## Local copies
 
