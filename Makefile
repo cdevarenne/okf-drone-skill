@@ -4,8 +4,10 @@ SCRIPTS := .claude/skills/drone-mission-compliance/scripts
 
 PY := uv run python
 OKF := reference-agent @ git+https://github.com/GoogleCloudPlatform/open-knowledge-format@$(OKF_COMMIT)
+PX4_DIR := .tools/px4
+PX4_BUILD := $(PX4_DIR)/build/px4_sitl_default
 
-.PHONY: bootstrap plan seeded examples test lint verify render clean
+.PHONY: bootstrap plan seeded examples px4 sitl test lint verify render clean
 
 bootstrap:
 	uv sync
@@ -22,6 +24,15 @@ seeded:
 examples:
 	rm -rf examples
 	$(PY) $(SCRIPTS)/seeded.py --seeded missions/SEEDED.yaml --knowledge knowledge --lock tools.lock --out examples --data docs/data/seeded.json
+
+px4:
+	test -d $(PX4_DIR) || git clone --depth 1 --branch $(PX4_VERSION) --recurse-submodules --shallow-submodules https://github.com/PX4/PX4-Autopilot $(PX4_DIR)
+	uv venv --allow-existing --python 3.12 .tools/px4-venv  # PX4 build tools; 3.12 as in the prototype
+	VIRTUAL_ENV=.tools/px4-venv uv pip install -r $(PX4_DIR)/Tools/setup/requirements.txt
+	PATH="$(CURDIR)/.tools/px4-venv/bin:$$PATH" $(MAKE) -C $(PX4_DIR) px4_sitl_default
+
+sitl:
+	uv run --extra sitl python $(SCRIPTS)/sitl_fly.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out --px4-build $(PX4_BUILD)
 
 test:
 	uv run pytest -q
