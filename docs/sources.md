@@ -26,7 +26,7 @@ Downloaded by the owner on 2026-09-28 (local time). Kept outside the repo; not r
 | `SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf` | S4 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf | 1344663 | `2471913e55c38999dc5ba0894ac696c3e4722ddb0956b1c62f15e6fbd9a1be1c` |
 
 The Decision itself (2 pages, not stored locally): https://www.easa.europa.eu/en/downloads/142510/en.
-Per that text (read by agent 2026-09-28, confirmed by cdevarenne 2026-09-29), the Decision enters into force on its
+Per that text (read by agent 2026-09-28, confirmed by cdevarenne 2026-09-28), the Decision enters into force on its
 publication in the EASA Official Publication.
 
 EASA SORA overview page (links to the SORA 2.5 package):
@@ -40,10 +40,10 @@ These come from a secondary source (https://eudroneport.com/blog/sora-2-5-europe
 2. Intrinsic GRC uses population density and a critical-area calculation (Annex F).
 3. Containment has low, medium and high levels.
 
-Findings 1 to 3: confirmed in S4 by cdevarenne 2026-09-29.
+Findings 1 to 3: confirmed in S4 by cdevarenne 2026-09-28.
 
 Checked 2026-09-28 in S4 (agent, text extraction and page images). Confirmed by cdevarenne
-2026-09-29.
+2026-09-28.
 
 - M3: S4 change log (edition 2.5) says "Removal of ERP as a mitigation". S4 Table 5 lists only
   M1(A), M1(B), M1(C) and M2. S2 OSO #08 names the ERP as Criterion #4.
@@ -58,7 +58,7 @@ Checked 2026-09-28 in S4 (agent, text extraction and page images). Confirmed by 
 Population density bands: found 2026-09-28 in S2 (AMC Issue 1, Amendment 3, Table 1 and
 Table 2, pages 23-25) and S4 (Table 2 and Table 3, pages 34-36). The iGRC values are the same in
 both. Bands: controlled ground area, < 5, < 50, < 500, < 5 000, < 50 000, > 50 000 people/km2.
-Confirmed by cdevarenne 2026-09-29.
+Confirmed by cdevarenne 2026-09-28.
 
 Resolved 2026-09-28: the corrigendum to ED Decision 2025/018/R (12 December 2025, 1 page) only
 renames the annex. "AMC and GM to Reg. (EU) 2019/947 — Issue 1, Amendment 3" becomes
