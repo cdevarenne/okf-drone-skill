@@ -2,81 +2,265 @@
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "okf-drone-skill/mission-request",
   "title": "Mission request (missions/<id>.yaml)",
-  "$comment": "Spec §5.2. Value sets that come from the bundle (mission_type, population_density, failsafe actions) are not listed here; the pipeline checks them against the bundle.",
+  "$comment": "Spec \u00a75.2. Value sets that come from the bundle (mission_type, population_density, failsafe actions) are not listed here; the pipeline checks them against the bundle. The airspace facts are the ARC conditions in risk/arc; they and the sora block are needed only for category specific.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["id", "mission_type", "category", "operation", "home", "terrain", "area", "geofence",
-               "max_altitude_agl_m", "speed_ms", "pattern", "ua", "ground", "airspace", "failsafes"],
+  "required": [
+    "id",
+    "mission_type",
+    "category",
+    "operation",
+    "home",
+    "terrain",
+    "area",
+    "geofence",
+    "max_altitude_agl_m",
+    "speed_ms",
+    "pattern",
+    "ua",
+    "ground",
+    "airspace",
+    "failsafes"
+  ],
   "properties": {
-    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
-    "mission_type": {"type": "string"},
-    "category": {"enum": ["open", "specific"]},
-    "operation": {"enum": ["VLOS", "BVLOS"]},
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9][a-z0-9-]*$"
+    },
+    "mission_type": {
+      "type": "string"
+    },
+    "category": {
+      "enum": [
+        "open",
+        "specific"
+      ]
+    },
+    "operation": {
+      "enum": [
+        "VLOS",
+        "BVLOS"
+      ]
+    },
     "home": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["lat", "lon", "amsl_m"],
+      "required": [
+        "lat",
+        "lon",
+        "amsl_m"
+      ],
       "properties": {
-        "lat": {"type": "number", "minimum": -90, "maximum": 90},
-        "lon": {"type": "number", "minimum": -180, "maximum": 180},
-        "amsl_m": {"type": "number"}
+        "lat": {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        "lon": {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        },
+        "amsl_m": {
+          "type": "number"
+        }
       }
     },
-    "terrain": {"enum": ["flat", "varied"]},
-    "area": {"$ref": "#/$defs/polygonObject"},
-    "geofence": {"$ref": "#/$defs/polygonObject"},
-    "max_altitude_agl_m": {"type": "number", "exclusiveMinimum": 0},
-    "speed_ms": {"type": "number", "exclusiveMinimum": 0},
+    "terrain": {
+      "enum": [
+        "flat",
+        "varied"
+      ]
+    },
+    "area": {
+      "$ref": "#/$defs/polygonObject"
+    },
+    "geofence": {
+      "$ref": "#/$defs/polygonObject"
+    },
+    "max_altitude_agl_m": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
+    "speed_ms": {
+      "type": "number",
+      "exclusiveMinimum": 0
+    },
     "pattern": {
       "oneOf": [
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["spacing_m"],
+          "required": [
+            "spacing_m"
+          ],
           "properties": {
-            "spacing_m": {"type": "number", "exclusiveMinimum": 0},
-            "datum": {"$ref": "#/$defs/latLon"}
+            "spacing_m": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "datum": {
+              "$ref": "#/$defs/latLon"
+            }
           }
         },
         {
           "type": "object",
           "additionalProperties": false,
-          "required": ["route"],
-          "properties": {"route": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/latLon"}}}
+          "required": [
+            "route"
+          ],
+          "properties": {
+            "route": {
+              "type": "array",
+              "minItems": 2,
+              "items": {
+                "$ref": "#/$defs/latLon"
+              }
+            }
+          }
         }
       ]
     },
     "ua": {
       "type": "object",
-      "required": ["mtom_kg", "char_dimension_m", "max_speed_ms"],
+      "required": [
+        "mtom_kg",
+        "char_dimension_m",
+        "max_speed_ms"
+      ],
       "properties": {
-        "mtom_kg": {"type": "number", "exclusiveMinimum": 0},
-        "char_dimension_m": {"type": "number", "exclusiveMinimum": 0},
-        "max_speed_ms": {"type": "number", "exclusiveMinimum": 0}
+        "mtom_kg": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "char_dimension_m": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "max_speed_ms": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
       }
     },
     "ground": {
       "type": "object",
-      "required": ["population_density"],
-      "properties": {"population_density": {"type": "string"}}
+      "required": [
+        "population_density"
+      ],
+      "properties": {
+        "population_density": {
+          "type": "string"
+        }
+      }
     },
     "airspace": {
       "type": "object",
-      "required": ["class", "declared_by"],
-      "properties": {"class": {"type": "string"}, "declared_by": {"type": "string"}}
+      "additionalProperties": false,
+      "required": [
+        "class",
+        "declared_by"
+      ],
+      "properties": {
+        "class": {
+          "type": "string"
+        },
+        "declared_by": {
+          "type": "string"
+        },
+        "atypical_airspace": {
+          "type": "boolean"
+        },
+        "above_fl600": {
+          "type": "boolean"
+        },
+        "airport_environment": {
+          "type": "boolean"
+        },
+        "above_500ft_agl": {
+          "type": "boolean"
+        },
+        "mode_c_veil_or_tmz": {
+          "type": "boolean"
+        },
+        "controlled_airspace": {
+          "type": "boolean"
+        },
+        "over_urban_area": {
+          "type": "boolean"
+        }
+      }
     },
     "failsafes": {
       "type": "object",
-      "additionalProperties": {"type": "string"},
-      "propertyNames": {"enum": ["lost_link", "low_battery", "critical_battery", "geofence_breach"]}
+      "additionalProperties": {
+        "type": "string"
+      },
+      "propertyNames": {
+        "enum": [
+          "lost_link",
+          "low_battery",
+          "critical_battery",
+          "geofence_breach"
+        ]
+      }
+    },
+    "sora": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mitigations": {
+          "type": "object",
+          "additionalProperties": {
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          }
+        },
+        "adjacent_area": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "below_people_km2",
+            "assemblies",
+            "shelter"
+          ],
+          "properties": {
+            "below_people_km2": {
+              "type": [
+                "number",
+                "null"
+              ],
+              "exclusiveMinimum": 0
+            },
+            "assemblies": {
+              "type": "string"
+            },
+            "shelter": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
     }
   },
   "$defs": {
     "latLon": {
       "type": "array",
       "prefixItems": [
-        {"type": "number", "minimum": -90, "maximum": 90},
-        {"type": "number", "minimum": -180, "maximum": 180}
+        {
+          "type": "number",
+          "minimum": -90,
+          "maximum": 90
+        },
+        {
+          "type": "number",
+          "minimum": -180,
+          "maximum": 180
+        }
       ],
       "minItems": 2,
       "maxItems": 2
@@ -84,8 +268,18 @@
     "polygonObject": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["polygon"],
-      "properties": {"polygon": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/latLon"}}}
+      "required": [
+        "polygon"
+      ],
+      "properties": {
+        "polygon": {
+          "type": "array",
+          "minItems": 3,
+          "items": {
+            "$ref": "#/$defs/latLon"
+          }
+        }
+      }
     }
   }
 }

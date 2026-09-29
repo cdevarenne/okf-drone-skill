@@ -1,0 +1,28 @@
+# Test fixture. The coordinates are arbitrary test values.
+id: specific
+mission_type: mapping-survey
+category: specific
+operation: BVLOS
+home: {lat: 44.7990, lon: -0.6000, amsl_m: 50}
+terrain: flat
+area: {polygon: [[44.7985, -0.6015], [44.8025, -0.6015], [44.8025, -0.5985], [44.7985, -0.5985]]}
+geofence: {polygon: [[44.7980, -0.6020], [44.8030, -0.6020], [44.8030, -0.5980], [44.7980, -0.5980]]}
+max_altitude_agl_m: 60
+speed_ms: 8
+pattern: {spacing_m: 40}
+ua: {mtom_kg: 0.9, char_dimension_m: 0.35, max_speed_ms: 15}
+ground: {population_density: sparsely-populated}
+airspace:
+  class: G
+  declared_by: operator
+  atypical_airspace: false
+  above_fl600: false
+  airport_environment: false
+  above_500ft_agl: false
+  mode_c_veil_or_tmz: false
+  controlled_airspace: false
+  over_urban_area: false
+failsafes: {lost_link: RTL, low_battery: RTL, critical_battery: LAND, geofence_breach: RTL}
+sora:
+  mitigations: {m1a: low}
+  adjacent_area: {below_people_km2: 5000, assemblies: under-40k, shelter: true}
