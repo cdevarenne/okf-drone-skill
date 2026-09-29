@@ -5,7 +5,7 @@ SCRIPTS := .claude/skills/drone-mission-compliance/scripts
 PY := uv run python
 OKF := reference-agent @ git+https://github.com/GoogleCloudPlatform/open-knowledge-format@$(OKF_COMMIT)
 
-.PHONY: bootstrap plan test lint verify render clean
+.PHONY: bootstrap plan seeded test lint verify render clean
 
 bootstrap:
 	uv sync
@@ -15,6 +15,9 @@ plan:
 	$(PY) $(SCRIPTS)/validate_plan.py --mission $(MISSION) --knowledge knowledge --out out
 	$(PY) $(SCRIPTS)/score_risk.py --mission $(MISSION) --knowledge knowledge --out out
 	$(PY) $(SCRIPTS)/render_report.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out
+
+seeded:
+	$(PY) $(SCRIPTS)/seeded.py --seeded missions/SEEDED.yaml --knowledge knowledge --lock tools.lock --out out --data docs/data/seeded.json
 
 test:
 	uv run pytest -q

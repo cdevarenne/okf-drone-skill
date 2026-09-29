@@ -1,0 +1,17 @@
+# Seeded missions (spec §7). tests/test_seeded.py runs each one; `make seeded` writes
+# docs/data/seeded.json. `cites`: concepts that the failed checks must cite. `gaps`: check ids
+# that must be gaps.
+- mission: m01-survey-open
+  expected: GO
+- mission: m02-altitude-over-limit
+  expected: NO-GO
+  cites: [regulations/easa-open]
+- mission: m03-outside-geofence
+  expected: NO-GO
+  cites: [failsafes/geofence-breach]
+- mission: m04-no-lost-link
+  expected: NO-GO
+  cites: [failsafes/lost-link]
+- mission: m05-specific-bvlos
+  expected: HOLD
+  gaps: [sora.oso]

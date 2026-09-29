@@ -1,0 +1,109 @@
+{
+  "source": "missions/SEEDED.yaml",
+  "missions": [
+    {
+      "mission": "m01-survey-open",
+      "expected": "GO",
+      "decision": "GO",
+      "fails": [],
+      "gaps": [],
+      "concepts_cited": [
+        "failsafes/geofence-breach",
+        "failsafes/lost-link",
+        "failsafes/low-battery",
+        "mavlink/nav-rtl",
+        "mavlink/nav-takeoff",
+        "regulations/easa-open",
+        "regulations/easa-specific-sora"
+      ]
+    },
+    {
+      "mission": "m02-altitude-over-limit",
+      "expected": "NO-GO",
+      "decision": "NO-GO",
+      "fails": [
+        {
+          "check_id": "alt.max_agl",
+          "concept_id": "regulations/easa-open"
+        }
+      ],
+      "gaps": [],
+      "concepts_cited": [
+        "failsafes/geofence-breach",
+        "failsafes/lost-link",
+        "failsafes/low-battery",
+        "mavlink/nav-rtl",
+        "mavlink/nav-takeoff",
+        "regulations/easa-open",
+        "regulations/easa-specific-sora"
+      ]
+    },
+    {
+      "mission": "m03-outside-geofence",
+      "expected": "NO-GO",
+      "decision": "NO-GO",
+      "fails": [
+        {
+          "check_id": "plan.inside_geofence",
+          "concept_id": "failsafes/geofence-breach"
+        }
+      ],
+      "gaps": [],
+      "concepts_cited": [
+        "failsafes/geofence-breach",
+        "failsafes/lost-link",
+        "failsafes/low-battery",
+        "mavlink/nav-rtl",
+        "mavlink/nav-takeoff",
+        "regulations/easa-open",
+        "regulations/easa-specific-sora"
+      ]
+    },
+    {
+      "mission": "m04-no-lost-link",
+      "expected": "NO-GO",
+      "decision": "NO-GO",
+      "fails": [
+        {
+          "check_id": "failsafe.lost_link",
+          "concept_id": "failsafes/lost-link"
+        }
+      ],
+      "gaps": [],
+      "concepts_cited": [
+        "failsafes/geofence-breach",
+        "failsafes/lost-link",
+        "failsafes/low-battery",
+        "mavlink/nav-rtl",
+        "mavlink/nav-takeoff",
+        "regulations/easa-open",
+        "regulations/easa-specific-sora"
+      ]
+    },
+    {
+      "mission": "m05-specific-bvlos",
+      "expected": "HOLD",
+      "decision": "HOLD",
+      "fails": [],
+      "gaps": [
+        {
+          "check_id": "sora.oso",
+          "concept_id": null
+        }
+      ],
+      "concepts_cited": [
+        "failsafes/geofence-breach",
+        "failsafes/lost-link",
+        "failsafes/low-battery",
+        "mavlink/nav-rtl",
+        "mavlink/nav-takeoff",
+        "regulations/easa-open",
+        "regulations/easa-specific-sora",
+        "risk/arc",
+        "risk/containment",
+        "risk/igrc",
+        "risk/sail"
+      ]
+    }
+  ]
+}
