@@ -1,0 +1,91 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "okf-drone-skill/mission-request",
+  "title": "Mission request (missions/<id>.yaml)",
+  "$comment": "Spec §5.2. Value sets that come from the bundle (mission_type, population_density, failsafe actions) are not listed here; the pipeline checks them against the bundle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "mission_type", "category", "operation", "home", "terrain", "area", "geofence",
+               "max_altitude_agl_m", "speed_ms", "pattern", "ua", "ground", "airspace", "failsafes"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$"},
+    "mission_type": {"type": "string"},
+    "category": {"enum": ["open", "specific"]},
+    "operation": {"enum": ["VLOS", "BVLOS"]},
+    "home": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["lat", "lon", "amsl_m"],
+      "properties": {
+        "lat": {"type": "number", "minimum": -90, "maximum": 90},
+        "lon": {"type": "number", "minimum": -180, "maximum": 180},
+        "amsl_m": {"type": "number"}
+      }
+    },
+    "terrain": {"enum": ["flat", "varied"]},
+    "area": {"$ref": "#/$defs/polygonObject"},
+    "geofence": {"$ref": "#/$defs/polygonObject"},
+    "max_altitude_agl_m": {"type": "number", "exclusiveMinimum": 0},
+    "speed_ms": {"type": "number", "exclusiveMinimum": 0},
+    "pattern": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["spacing_m"],
+          "properties": {
+            "spacing_m": {"type": "number", "exclusiveMinimum": 0},
+            "datum": {"$ref": "#/$defs/latLon"}
+          }
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["route"],
+          "properties": {"route": {"type": "array", "minItems": 2, "items": {"$ref": "#/$defs/latLon"}}}
+        }
+      ]
+    },
+    "ua": {
+      "type": "object",
+      "required": ["mtom_kg", "char_dimension_m", "max_speed_ms"],
+      "properties": {
+        "mtom_kg": {"type": "number", "exclusiveMinimum": 0},
+        "char_dimension_m": {"type": "number", "exclusiveMinimum": 0},
+        "max_speed_ms": {"type": "number", "exclusiveMinimum": 0}
+      }
+    },
+    "ground": {
+      "type": "object",
+      "required": ["population_density"],
+      "properties": {"population_density": {"type": "string"}}
+    },
+    "airspace": {
+      "type": "object",
+      "required": ["class", "declared_by"],
+      "properties": {"class": {"type": "string"}, "declared_by": {"type": "string"}}
+    },
+    "failsafes": {
+      "type": "object",
+      "additionalProperties": {"type": "string"},
+      "propertyNames": {"enum": ["lost_link", "low_battery", "critical_battery", "geofence_breach"]}
+    }
+  },
+  "$defs": {
+    "latLon": {
+      "type": "array",
+      "prefixItems": [
+        {"type": "number", "minimum": -90, "maximum": 90},
+        {"type": "number", "minimum": -180, "maximum": 180}
+      ],
+      "minItems": 2,
+      "maxItems": 2
+    },
+    "polygonObject": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["polygon"],
+      "properties": {"polygon": {"type": "array", "minItems": 3, "items": {"$ref": "#/$defs/latLon"}}}
+    }
+  }
+}
