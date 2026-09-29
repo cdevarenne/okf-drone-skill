@@ -18,8 +18,8 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 | 0 | Scaffold, pinned versions, `.plan` subset schema, source register | Done |
 | 1 | OKF bundle: regulations, SORA 2.5 tables, hazards, failsafes, MAVLink, mission types | Done, verified by the owner |
 | 2 | `gen_plan`: mission request to QGroundControl `.plan` | Done |
-| 3 | `validate_plan`, `score_risk` | Next |
-| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Planned |
+| 3 | `validate_plan`, `score_risk` | Done |
+| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Next |
 | 5 | Screenshots, "How this was built" | Planned |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
@@ -51,6 +51,7 @@ The tool writes `signoff.yaml` with empty approval fields. It never fills them.
 - Every concept has a `# Source` section. It cites only documents with status `read` in
   [`docs/sources.md`](docs/sources.md). The conformance test enforces this.
 - Every concept has a `verified` entry from a person. The conformance test enforces this too.
+- A concept counts only if a person verified it; an unverified concept is a gap.
 
 ## Knowledge bundle
 
@@ -75,7 +76,7 @@ Needs Python 3.14 and [uv](https://docs.astral.sh/uv/).
 make bootstrap   # uv sync
 make verify      # ruff and pytest
 make render      # OKF visualizer HTML of knowledge/ in out/knowledge-viz.html
-make plan MISSION=tests/fixtures/missions/survey.yaml  # writes out/survey/mission.plan
+make plan MISSION=tests/fixtures/missions/survey.yaml  # writes mission.plan, validation.json, risk.json
 ```
 
 ## How this was built
