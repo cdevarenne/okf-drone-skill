@@ -21,6 +21,7 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 | 3 | `validate_plan`, `score_risk` | Done |
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
 | 5 | Screenshots, examples, "How this was built" | Done |
+| DRN-10 | Optional PX4 SITL flight check (`make px4`, `make sitl`) | Done, flown by the owner |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
 
@@ -158,7 +159,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - **Human gates.** The owner read the sources (Phase 0), verified every concept (Phase 1), and
   reviewed the reports of the seeded missions m01 to m05 (Phase 4) before the next phase. A
   concept that changed after its review was verified again (`risk/arc`, units). The owner
-  loaded a generated plan in QGroundControl (Phase 2). The tool only proposes a decision; in
+  loaded a generated plan in QGroundControl (Phase 2). The owner flew m01 to m05 in PX4 SITL
+  on an aarch64 Linux VM and got the same statuses as the prototype (DRN-10). The tool only proposes a decision; in
   the Phase 4 review, the owner filled `signoff.yaml` by hand.
 - **Generated, never typed.** `docs/data/seeded.json` and `examples/` are written by `make`;
   tests fail if they are not current.
@@ -180,7 +182,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 
 ## What's next
 
-- DRN-09: optional LLM steps that the owner runs, outside `make plan`.
+- DRN-09: optional LLM steps that the owner runs, outside `make plan`. It has no spec yet;
+  the first step is its spec.
 - The SITL results in the report, and failsafe tests in SITL (for example a data-link loss).
 - The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
 - Terrain data, so that the height check can run on varied terrain.
