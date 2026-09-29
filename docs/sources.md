@@ -16,6 +16,7 @@ A concept can cite only a document with status `read`.
 | S8 | QGroundControl plan file format | master | https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/file_formats/plan.html | `platform/qgc-plan-format`, `tests/fixtures/qgc/plan.schema.json` | read 2026-09-28 by agent; read 2026-09-28 by cdevarenne |
 | S9 | MAVLink common message set | master | https://mavlink.io/en/messages/common.html | `mavlink/*` command ids and parameters | read 2026-09-28 by cdevarenne |
 | S10 | Comprehensive Drone Flight Plan Template (owner input; kept outside the repo) | 1.0 | none | `hazards/*`, `mission-types/*`, failsafe actions | read 2026-09-28 by cdevarenne |
+| S11 | PX4 Safety (Failsafe) Configuration, child page of the S7 safety page | v1.17 | https://docs.px4.io/v1.17/en/config/safety | locating the `failsafes/*` parameters (the values come from S7) | unread |
 
 ## Local copies
 
