@@ -57,12 +57,31 @@ wheels = [
 ]
 
 [[package]]
+name = "mavsdk"
+version = "4.0.1"
+source = { registry = "https://pypi.org/simple" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/17/b1/0e54f536612fe0849ab9fbb6e51a9b6fc46da06e3ca9d56d1cc1670e9f64/mavsdk-4.0.1-cp38-abi3-macosx_15_0_arm64.whl", hash = "sha256:6fd001e2359ceb51daec384a7c9b062f72e19e3138159491d02390abd884fef3", size = 5433808, upload-time = "2026-09-28T21:52:57.69Z" },
+    { url = "https://files.pythonhosted.org/packages/d3/a2/f5bb9a9184c68349f76c66c9fee5167ea831ff0e86d9555083d92cf7f62b/mavsdk-4.0.1-cp38-abi3-macosx_15_0_x86_64.whl", hash = "sha256:24ad5f51595ac5d22de282f0a9e889b76f552381d241332a57eaf15485047dc9", size = 5207025, upload-time = "2026-09-28T21:52:59.879Z" },
+    { url = "https://files.pythonhosted.org/packages/5e/44/38d13642562f79297a5b53a6ce3f64bd3b8144ace3f093d1ffbe50426cd3/mavsdk-4.0.1-cp38-abi3-manylinux2014_aarch64.manylinux_2_17_aarch64.whl", hash = "sha256:39eca7dd914bbd2b434aa06eb12d3b2a9201c3af56323a1260a8f076a5de7fb4", size = 5538423, upload-time = "2026-09-28T21:53:02.319Z" },
+    { url = "https://files.pythonhosted.org/packages/fe/5b/49a9724cc19874aaafb20ae31c598f253854e199be4a0181052859eb9399/mavsdk-4.0.1-cp38-abi3-manylinux_2_28_x86_64.whl", hash = "sha256:55e8c752fd83034dd634b14db834261354b61c146fe270d6f8b9ca3c999aaa83", size = 5635640, upload-time = "2026-09-28T21:53:04.492Z" },
+    { url = "https://files.pythonhosted.org/packages/af/74/0153100cdcf94341757b87c06eb81d28d19421e88aa9fa7c6c53c7ce4192/mavsdk-4.0.1-cp38-abi3-win32.whl", hash = "sha256:110e586d666ac1bc7d7ea6e6cff4bfc42026ed33bba4a7c9c485968285ec89f8", size = 5526779, upload-time = "2026-09-28T21:53:06.843Z" },
+    { url = "https://files.pythonhosted.org/packages/69/0e/2f72683f55329ca7fd2596ea5cfc157375e38d8765013eed198f7b15375b/mavsdk-4.0.1-cp38-abi3-win_amd64.whl", hash = "sha256:c2eddb07b239073784f034ab1ef904ed95cce2b939b78e66ff331dacfa91f4e4", size = 6407376, upload-time = "2026-09-28T21:53:09.057Z" },
+    { url = "https://files.pythonhosted.org/packages/b7/ba/9d49467d3f2462e860ab6fcb8aaa9acf663f9c275903f5b6a4556ad136e1/mavsdk-4.0.1-cp38-abi3-win_arm64.whl", hash = "sha256:65187372672319d5b818a86f8326ee09e434253a02081b03d4015fcb9e0911f4", size = 6466494, upload-time = "2026-09-28T21:53:11.832Z" },
+]
+
+[[package]]
 name = "okf-drone-skill"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "jsonschema" },
     { name = "pyyaml" },
+]
+
+[package.optional-dependencies]
+sitl = [
+    { name = "mavsdk" },
 ]
 
 [package.dev-dependencies]
@@ -74,8 +93,10 @@ dev = [
 [package.metadata]
 requires-dist = [
     { name = "jsonschema", specifier = ">=4.25" },
+    { name = "mavsdk", marker = "extra == 'sitl'", specifier = "==4.0.1" },
     { name = "pyyaml", specifier = ">=6.0.2" },
 ]
+provides-extras = ["sitl"]
 
 [package.metadata.requires-dev]
 dev = [

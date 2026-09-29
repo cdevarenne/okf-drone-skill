@@ -11,6 +11,7 @@ REQUIRED = {
     "QGC_GEOFENCE_VERSION",
     "QGC_RALLY_VERSION",
     "SORA_EDITION",
+    "PX4_VERSION",
 }
 
 
@@ -36,9 +37,13 @@ def test_okf_commit_is_full_sha() -> None:
 
 def test_qgc_versions_are_integers() -> None:
     lock = read_lock()
-    for key in REQUIRED - {"OKF_COMMIT", "SORA_EDITION"}:
+    for key in REQUIRED - {"OKF_COMMIT", "SORA_EDITION", "PX4_VERSION"}:
         assert lock[key].isdigit(), key
 
 
 def test_sora_edition() -> None:
     assert read_lock()["SORA_EDITION"] == "2.5"
+
+
+def test_px4_version_is_a_release_tag() -> None:
+    assert re.fullmatch(r"v\d+\.\d+\.\d+", read_lock()["PX4_VERSION"])

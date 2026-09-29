@@ -8,3 +8,5 @@ QGC_GEOFENCE_VERSION=2
 QGC_RALLY_VERSION=2
 # JARUS SORA edition, as adopted by EASA ED Decision 2025/018/R.
 SORA_EDITION=2.5
+# PX4 autopilot for SITL (DRN-10): https://github.com/PX4/PX4-Autopilot. Parameter reference S7 is v1.17.
+PX4_VERSION=v1.17.0
