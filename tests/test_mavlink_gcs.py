@@ -2,15 +2,23 @@
 
 import json
 import math
+import time
 from pathlib import Path
 
+import mavlink_gcs
 import pytest
 from mavlink_gcs import (
+    CMD_SET_MESSAGE_INTERVAL,
     FENCE_VERTEX_INCLUSION,
     MISSION_STATE_COMPLETE,
     MISSION_TYPE_FENCE,
     MISSION_TYPE_MISSION,
+    POSITION_INTERVAL_US,
+    POSITION_MSG_ID,
     PX4_AUTO_MISSION,
+    QUIET_MESSAGES,
+    READ_MESSAGES,
+    RESULT_ACCEPTED,
     Gcs,
     fence_items,
     int_as_param_float,
@@ -74,3 +82,58 @@ def test_progress_is_total_when_the_mission_is_complete() -> None:
 def test_mission_mode_is_px4_auto_mission() -> None:
     assert _gcs_with(custom_mode=PX4_AUTO_MISSION).in_mission_mode()
     assert not _gcs_with(custom_mode=(4 << 16) | (5 << 24)).in_mission_mode()  # AUTO.RTL
+
+
+def test_quiet_messages_are_not_read() -> None:
+    assert not set(QUIET_MESSAGES) & READ_MESSAGES
+
+
+def test_message_ids_match_pymavlink() -> None:
+    mavlink = pytest.importorskip("pymavlink.dialects.v20.common")
+    for name, msg_id in {**QUIET_MESSAGES, "GLOBAL_POSITION_INT": POSITION_MSG_ID}.items():
+        assert getattr(mavlink, f"MAVLINK_MSG_ID_{name}") == msg_id
+
+
+def test_quiet_stops_the_unread_streams_and_slows_the_position() -> None:
+    gcs, sent = _gcs_with(), []
+    gcs.command = lambda cmd, *params: sent.append((cmd, *params)) or RESULT_ACCEPTED
+    gcs.quiet()
+    assert sent == [(CMD_SET_MESSAGE_INTERVAL, i, -1) for i in QUIET_MESSAGES.values()] + [
+        (CMD_SET_MESSAGE_INTERVAL, POSITION_MSG_ID, POSITION_INTERVAL_US)
+    ]
+
+
+class _Msg:
+    def __init__(self, kind: str, **fields) -> None:
+        self.kind, self.mission_type = kind, MISSION_TYPE_MISSION
+        self.__dict__.update(fields)
+
+    def get_type(self) -> str:
+        return self.kind
+
+
+def test_upload_sends_the_count_again_when_the_vehicle_does_not_answer(monkeypatch) -> None:
+    """PX4 drops a transfer after its timeout; a new MISSION_COUNT starts it again."""
+    monkeypatch.setattr(mavlink_gcs, "UPLOAD_RESEND_S", 0.05)
+    items = mission_items(PLAN)[:2]
+    counts, sent = [], []
+    replies = [_Msg("MISSION_REQUEST_INT", seq=0), _Msg("MISSION_REQUEST_INT", seq=1)]
+    replies.append(_Msg("MISSION_ACK", type=0))
+
+    class Mav:
+        def mission_count_send(self, *args) -> None:
+            counts.append(args)
+
+        def mission_item_int_send(self, *args) -> None:
+            sent.append(args[2])
+
+    def recv(types, timeout):
+        if len(counts) < 2:  # the first MISSION_COUNT is lost
+            time.sleep(0.01)
+            return None
+        return replies.pop(0)
+
+    gcs = _gcs_with()
+    gcs.target, gcs.conn, gcs.recv = (1, 1), type("Conn", (), {"mav": Mav()})(), recv
+    gcs.upload(items, MISSION_TYPE_MISSION)
+    assert len(counts) == 2 and sent == [0, 1]

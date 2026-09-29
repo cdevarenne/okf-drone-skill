@@ -85,6 +85,7 @@ def fly(plan: dict[str, Any], params: dict[str, int], timeout_s: float) -> tuple
     gcs = Gcs(GCS_URL)
     try:
         gcs.wait_position(60)
+        gcs.quiet()  # a slow computer must read the mission requests in time
         read_back = {name: gcs.set_param_int(name, value) for name, value in params.items()}
         gcs.upload(fence_items(plan), MISSION_TYPE_FENCE)
         gcs.upload(mission_items(plan), MISSION_TYPE_MISSION)
