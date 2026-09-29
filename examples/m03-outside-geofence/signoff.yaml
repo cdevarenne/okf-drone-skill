@@ -1,0 +1,19 @@
+# Written by okf-drone-skill. The tool never fills the approval fields.
+# A person fills name, decision (GO or NO-GO) and date for each role.
+mission_id: m03-outside-geofence
+proposed_decision: NO-GO
+plan_sha256: d076dd1cb4b2d884c2aac0e9d7f70a7b14d797c77a57927e31cde48b11422e82
+report_sha256: 42b2810b60720bc742ee86b12827622f1907f137c8163a4cbd5d0644a2846412
+approvals:
+  - role: "Remote Pilot in Command (RPIC)"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Mission Supervisor/Commander"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Safety Officer (optional)"
+    name: ""
+    decision: ""
+    date: ""

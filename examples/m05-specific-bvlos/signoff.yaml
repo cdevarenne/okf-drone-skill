@@ -1,0 +1,19 @@
+# Written by okf-drone-skill. The tool never fills the approval fields.
+# A person fills name, decision (GO or NO-GO) and date for each role.
+mission_id: m05-specific-bvlos
+proposed_decision: HOLD
+plan_sha256: 4743831b92441c37a1e29841e210320ec33083045ba32e3fbfba0da638bf4a8a
+report_sha256: bd478279699b6a816aa950549bb2522cb266424e32a17df94b6c5a6459d1bf55
+approvals:
+  - role: "Remote Pilot in Command (RPIC)"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Mission Supervisor/Commander"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Safety Officer (optional)"
+    name: ""
+    decision: ""
+    date: ""

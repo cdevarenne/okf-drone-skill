@@ -1,0 +1,68 @@
+{
+  "mission_id": "m03-outside-geofence",
+  "checks": [
+    {
+      "check_id": "alt.max_agl",
+      "status": "pass",
+      "concept_id": "regulations/easa-open",
+      "evidence": "highest item 60 m above home; terrain flat; limit 120 m",
+      "message": "the plan stays within the height limit"
+    },
+    {
+      "check_id": "category.operation",
+      "status": "pass",
+      "concept_id": "regulations/easa-open",
+      "evidence": "operation VLOS; MTOM 0.9 kg",
+      "message": "the operation meets the open-category conditions"
+    },
+    {
+      "check_id": "plan.first_item_takeoff",
+      "status": "pass",
+      "concept_id": "mavlink/nav-takeoff",
+      "evidence": "first item command 22",
+      "message": "the plan starts with a takeoff"
+    },
+    {
+      "check_id": "plan.last_item_return",
+      "status": "pass",
+      "concept_id": "mavlink/nav-rtl",
+      "evidence": "last item command 20; allowed [20, 21]",
+      "message": "the plan ends with RTL or LAND"
+    },
+    {
+      "check_id": "plan.inside_geofence",
+      "status": "fail",
+      "concept_id": "failsafes/geofence-breach",
+      "evidence": "15 items; outside: [3, 4, 7, 8, 11, 12, 15]",
+      "message": "items [3, 4, 7, 8, 11, 12, 15] are outside the geofence"
+    },
+    {
+      "check_id": "failsafe.lost_link",
+      "status": "pass",
+      "concept_id": "failsafes/lost-link",
+      "evidence": "failsafes.lost_link: RTL",
+      "message": "the lost_link action is RTL"
+    },
+    {
+      "check_id": "failsafe.low_battery",
+      "status": "pass",
+      "concept_id": "failsafes/low-battery",
+      "evidence": "failsafes.low_battery: RTL",
+      "message": "the low_battery action is RTL"
+    },
+    {
+      "check_id": "failsafe.critical_battery",
+      "status": "pass",
+      "concept_id": "failsafes/low-battery",
+      "evidence": "failsafes.critical_battery: LAND",
+      "message": "the critical_battery action is LAND"
+    },
+    {
+      "check_id": "failsafe.geofence_breach",
+      "status": "pass",
+      "concept_id": "failsafes/geofence-breach",
+      "evidence": "failsafes.geofence_breach: RTL",
+      "message": "the geofence_breach action is RTL"
+    }
+  ]
+}

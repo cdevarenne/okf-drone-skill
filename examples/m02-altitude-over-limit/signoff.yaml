@@ -1,0 +1,19 @@
+# Written by okf-drone-skill. The tool never fills the approval fields.
+# A person fills name, decision (GO or NO-GO) and date for each role.
+mission_id: m02-altitude-over-limit
+proposed_decision: NO-GO
+plan_sha256: 8e0a09c3078db7ebc84c3e04437721e5ab1642204bb9059877dd7ac0cd225ba9
+report_sha256: 47aeec8933b0f73586948d48815c44295a04e706f09908ba491a0aec0da7373f
+approvals:
+  - role: "Remote Pilot in Command (RPIC)"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Mission Supervisor/Commander"
+    name: ""
+    decision: ""
+    date: ""
+  - role: "Safety Officer (optional)"
+    name: ""
+    decision: ""
+    date: ""

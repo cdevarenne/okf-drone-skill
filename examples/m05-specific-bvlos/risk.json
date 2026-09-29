@@ -1,0 +1,221 @@
+{
+  "mission_id": "m05-specific-bvlos",
+  "hazards": [
+    {
+      "hazard_id": "hazards/gps-jamming",
+      "likelihood": 1,
+      "severity": 4,
+      "score": 4,
+      "mitigations": [
+        "After GPS loss, fly in altitude hold or stabilize mode. See GPS loss.",
+        "Rely on the VO.",
+        "If possible, use visual navigation."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/loss-of-c2",
+      "likelihood": 2,
+      "severity": 4,
+      "score": 8,
+      "mitigations": [
+        "Set the lost-link failsafe to RTL. See Lost link.",
+        "Have a secondary C2 link available.",
+        "A visual observer (VO) keeps the UA in visual line of sight (VLOS)."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/loss-of-vlos",
+      "likelihood": 2,
+      "severity": 3,
+      "score": 6,
+      "mitigations": [
+        "Use VOs.",
+        "Plan the flight path inside the visual range.",
+        "Use clear communication procedures between the pilot and the VOs. See ARC for the VLOS mitigation."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/low-battery",
+      "likelihood": 2,
+      "severity": 3,
+      "score": 6,
+      "mitigations": [
+        "Do a pre-flight battery check.",
+        "Monitor the battery voltage during the flight.",
+        "Set RTL at the low level and LAND at the critical level. See Low and critical battery."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/midair-manned",
+      "likelihood": 1,
+      "severity": 5,
+      "score": 5,
+      "mitigations": [
+        "Monitor ADS-B, if the UA has it.",
+        "VOs scan the airspace.",
+        "Operate below the open-category height limit. See Open category and ARC."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/midair-suas",
+      "likelihood": 2,
+      "severity": 3,
+      "score": 6,
+      "mitigations": [
+        "VOs scan the airspace.",
+        "Operate inside the geofence. See Geofence breach.",
+        "Coordinate operations with more than one UA. See ARC."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/obstacle-ground",
+      "likelihood": 2,
+      "severity": 3,
+      "score": 6,
+      "mitigations": [
+        "Do a pre-flight survey of the area.",
+        "Keep a safe altitude.",
+        "Use onboard obstacle avoidance, if the UA has it."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/payload-malfunction",
+      "likelihood": 2,
+      "severity": 2,
+      "score": 4,
+      "mitigations": [
+        "Do pre-flight payload checks.",
+        "Land if the malfunction has an effect on safety."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/public-interference",
+      "likelihood": 2,
+      "severity": 2,
+      "score": 4,
+      "mitigations": [
+        "Set up a safety perimeter.",
+        "Ground support personnel manage contact with the public. See iGRC for the controlled ground area."
+      ],
+      "residual": "Low"
+    },
+    {
+      "hazard_id": "hazards/weather-change",
+      "likelihood": 2,
+      "severity": 4,
+      "score": 8,
+      "mitigations": [
+        "Monitor the weather continuously.",
+        "Land or do an RTL immediately if the conditions are more than the limits."
+      ],
+      "residual": "Low"
+    }
+  ],
+  "sora": {
+    "igrc": {
+      "value": 4,
+      "concept_id": "risk/igrc"
+    },
+    "mitigations_applied": [
+      {
+        "concept_id": "risk/m1a",
+        "level": "low",
+        "credit": -1
+      }
+    ],
+    "final_grc": {
+      "value": 3,
+      "concept_id": "risk/igrc"
+    },
+    "initial_arc": {
+      "value": "b",
+      "concept_id": "risk/arc"
+    },
+    "tmpr": {
+      "value": "low",
+      "concept_id": "risk/arc"
+    },
+    "residual_arc": {
+      "value": "b",
+      "concept_id": "risk/arc"
+    },
+    "sail": {
+      "value": "II",
+      "concept_id": "risk/sail"
+    },
+    "containment": {
+      "value": "low",
+      "concept_id": "risk/containment"
+    },
+    "oso": {
+      "value": "not_assessed",
+      "concept_id": null
+    }
+  },
+  "checks": [
+    {
+      "check_id": "sora.applicable",
+      "status": "pass",
+      "concept_id": "regulations/easa-specific-sora",
+      "evidence": "category specific",
+      "message": "SORA 2.5 applies"
+    },
+    {
+      "check_id": "sora.igrc",
+      "status": "pass",
+      "concept_id": "risk/igrc",
+      "evidence": "band sparsely-populated; dimension 0.35 m; speed 15 m/s",
+      "message": "iGRC 4 (column 1)"
+    },
+    {
+      "check_id": "sora.final_grc",
+      "status": "pass",
+      "concept_id": "risk/igrc",
+      "evidence": "iGRC 4; credits [-1]",
+      "message": "final GRC 3"
+    },
+    {
+      "check_id": "sora.initial_arc",
+      "status": "pass",
+      "concept_id": "risk/arc",
+      "evidence": "first matching rule: default",
+      "message": "ARC-b"
+    },
+    {
+      "check_id": "sora.residual_arc",
+      "status": "pass",
+      "concept_id": "risk/arc",
+      "evidence": "initial ARC-b; operation BVLOS",
+      "message": "ARC-b; TMPR low"
+    },
+    {
+      "check_id": "sora.sail",
+      "status": "pass",
+      "concept_id": "risk/sail",
+      "evidence": "final GRC 3; residual ARC-b",
+      "message": "SAIL II"
+    },
+    {
+      "check_id": "sora.containment",
+      "status": "pass",
+      "concept_id": "risk/containment",
+      "evidence": "table 8; SAIL II; adjacent area {'below_people_km2': 5000, 'assemblies': 'under-40k', 'shelter': True}",
+      "message": "low containment"
+    },
+    {
+      "check_id": "sora.oso",
+      "status": "gap",
+      "concept_id": null,
+      "evidence": "",
+      "message": "no verified concept in the bundle governs sora.oso"
+    }
+  ]
+}

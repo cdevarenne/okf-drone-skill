@@ -1,0 +1,163 @@
+# Mission report: m05-specific-bvlos
+
+**Proposed decision: HOLD** (0 failed checks, 1 gap). The tool proposes; a person decides and signs `signoff.yaml`.
+
+## 1. Mission overview
+
+| Mission ID | Mission type | Category | Operation |
+|---|---|---|---|
+| m05-specific-bvlos | Mapping survey | specific | BVLOS |
+
+## 2. Operational details
+
+| Item | Value |
+|---|---|
+| Takeoff and landing (home) | 44.799, -0.6, 50 m AMSL |
+| Maximum altitude | 100 m, relative to home |
+| Terrain (declared) | flat |
+| Speed | 8 m/s |
+| Area vertices | 4 |
+| Geofence vertices | 4 |
+| UA | MTOM 0.9 kg, 0.35 m, 15 m/s |
+| Population density (declared) | sparsely-populated |
+
+## 3. Airspace and regulatory compliance
+
+Airspace, NOTAM, TFR and weather are **declared inputs** in v1. The tool does not check them against a live source. Airspace class G, declared by operator.
+
+| Check | Status | Concept | Evidence | Message |
+|---|---|---|---|---|
+| alt.max_agl | not_applicable | regulations/easa-open | category specific | open category only |
+| category.operation | pass | regulations/easa-open | category specific | no open-category condition |
+| plan.first_item_takeoff | pass | mavlink/nav-takeoff | first item command 22 | the plan starts with a takeoff |
+| plan.last_item_return | pass | mavlink/nav-rtl | last item command 20; allowed [20, 21] | the plan ends with RTL or LAND |
+| plan.inside_geofence | pass | failsafes/geofence-breach | 23 items; outside: none | every item is inside the geofence |
+| failsafe.lost_link | pass | failsafes/lost-link | failsafes.lost_link: RTL | the lost_link action is RTL |
+| failsafe.low_battery | pass | failsafes/low-battery | failsafes.low_battery: RTL | the low_battery action is RTL |
+| failsafe.critical_battery | pass | failsafes/low-battery | failsafes.critical_battery: LAND | the critical_battery action is LAND |
+| failsafe.geofence_breach | pass | failsafes/geofence-breach | failsafes.geofence_breach: RTL | the geofence_breach action is RTL |
+
+## 4. Risk assessment
+
+Hazard matrix (likelihood and severity 1 to 5; score = likelihood x severity):
+
+| Hazard | L | S | Score | Mitigation | Residual |
+|---|---|---|---|---|---|
+| hazards/gps-jamming | 1 | 4 | 4 | After GPS loss, fly in altitude hold or stabilize mode. See GPS loss.; Rely on the VO.; If possible, use visual navigation. | Low |
+| hazards/loss-of-c2 | 2 | 4 | 8 | Set the lost-link failsafe to RTL. See Lost link.; Have a secondary C2 link available.; A visual observer (VO) keeps the UA in visual line of sight (VLOS). | Low |
+| hazards/loss-of-vlos | 2 | 3 | 6 | Use VOs.; Plan the flight path inside the visual range.; Use clear communication procedures between the pilot and the VOs. See ARC for the VLOS mitigation. | Low |
+| hazards/low-battery | 2 | 3 | 6 | Do a pre-flight battery check.; Monitor the battery voltage during the flight.; Set RTL at the low level and LAND at the critical level. See Low and critical battery. | Low |
+| hazards/midair-manned | 1 | 5 | 5 | Monitor ADS-B, if the UA has it.; VOs scan the airspace.; Operate below the open-category height limit. See Open category and ARC. | Low |
+| hazards/midair-suas | 2 | 3 | 6 | VOs scan the airspace.; Operate inside the geofence. See Geofence breach.; Coordinate operations with more than one UA. See ARC. | Low |
+| hazards/obstacle-ground | 2 | 3 | 6 | Do a pre-flight survey of the area.; Keep a safe altitude.; Use onboard obstacle avoidance, if the UA has it. | Low |
+| hazards/payload-malfunction | 2 | 2 | 4 | Do pre-flight payload checks.; Land if the malfunction has an effect on safety. | Low |
+| hazards/public-interference | 2 | 2 | 4 | Set up a safety perimeter.; Ground support personnel manage contact with the public. See iGRC for the controlled ground area. | Low |
+| hazards/weather-change | 2 | 4 | 8 | Monitor the weather continuously.; Land or do an RTL immediately if the conditions are more than the limits. | Low |
+
+SORA 2.5 summary:
+
+| Step | Value | Concept |
+|---|---|---|
+| igrc | 4 | risk/igrc |
+| final_grc | 3 | risk/igrc |
+| initial_arc | b | risk/arc |
+| tmpr | low | risk/arc |
+| residual_arc | b | risk/arc |
+| sail | II | risk/sail |
+| containment | low | risk/containment |
+| oso | not_assessed | none |
+
+Declared mitigations (operator claims; v1 does not check the Annex B criteria): risk/m1a low (-1).
+
+The ARC facts use aviation units, as in the source: 500 ft AGL (152.4 m) and FL600 (a pressure altitude). See `risk/arc`, Units.
+
+| Check | Status | Concept | Evidence | Message |
+|---|---|---|---|---|
+| sora.applicable | pass | regulations/easa-specific-sora | category specific | SORA 2.5 applies |
+| sora.igrc | pass | risk/igrc | band sparsely-populated; dimension 0.35 m; speed 15 m/s | iGRC 4 (column 1) |
+| sora.final_grc | pass | risk/igrc | iGRC 4; credits [-1] | final GRC 3 |
+| sora.initial_arc | pass | risk/arc | first matching rule: default | ARC-b |
+| sora.residual_arc | pass | risk/arc | initial ARC-b; operation BVLOS | ARC-b; TMPR low |
+| sora.sail | pass | risk/sail | final GRC 3; residual ARC-b | SAIL II |
+| sora.containment | pass | risk/containment | table 8; SAIL II; adjacent area {'below_people_km2': 5000, 'assemblies': 'under-40k', 'shelter': True} | low containment |
+| sora.oso | gap | none |  | no verified concept in the bundle governs sora.oso |
+
+## 5. Flight profile and waypoint plan
+
+File `mission.plan` (QGroundControl plan, WGS84). Altitudes in metres relative to home.
+
+| Seq | Command | Frame | Latitude | Longitude | Altitude (m) |
+|---|---|---|---|---|---|
+| 1 | MAV_CMD_NAV_TAKEOFF | 3 | 44.799 | -0.6 | 100 |
+| 2 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7986799 | -0.6012465 | 100 |
+| 3 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7986799 | -0.5987535 | 100 |
+| 4 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7990396 | -0.5987535 | 100 |
+| 5 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7990396 | -0.6012465 | 100 |
+| 6 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7993993 | -0.6012465 | 100 |
+| 7 | MAV_CMD_NAV_WAYPOINT | 3 | 44.7993993 | -0.5987535 | 100 |
+| 8 | MAV_CMD_NAV_WAYPOINT | 3 | 44.799759 | -0.5987535 | 100 |
+| 9 | MAV_CMD_NAV_WAYPOINT | 3 | 44.799759 | -0.6012465 | 100 |
+| 10 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8001188 | -0.6012465 | 100 |
+| 11 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8001188 | -0.5987535 | 100 |
+| 12 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8004785 | -0.5987535 | 100 |
+| 13 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8004785 | -0.6012465 | 100 |
+| 14 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8008382 | -0.6012465 | 100 |
+| 15 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8008382 | -0.5987535 | 100 |
+| 16 | MAV_CMD_NAV_WAYPOINT | 3 | 44.801198 | -0.5987535 | 100 |
+| 17 | MAV_CMD_NAV_WAYPOINT | 3 | 44.801198 | -0.6012465 | 100 |
+| 18 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8015577 | -0.6012465 | 100 |
+| 19 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8015577 | -0.5987535 | 100 |
+| 20 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8019174 | -0.5987535 | 100 |
+| 21 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8019174 | -0.6012465 | 100 |
+| 22 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8022771 | -0.6012465 | 100 |
+| 23 | MAV_CMD_NAV_WAYPOINT | 3 | 44.8022771 | -0.5987535 | 100 |
+| 24 | MAV_CMD_NAV_RETURN_TO_LAUNCH | 2 |  |  |  |
+
+Failsafe settings (declared; they are vehicle parameters, not part of the plan):
+
+| Failsafe | Declared action | Concept | PX4 parameters |
+|---|---|---|---|
+| geofence_breach | RTL | failsafes/geofence-breach | GF_ACTION, GF_MAX_HOR_DIST, GF_MAX_VER_DIST |
+| lost_link | RTL | failsafes/lost-link | NAV_DLL_ACT, COM_DL_LOSS_T, NAV_RCL_ACT, COM_RC_LOSS_T |
+| low_battery | RTL | failsafes/low-battery | COM_LOW_BAT_ACT, BAT_LOW_THR, BAT_CRIT_THR, BAT_EMERGEN_THR |
+| critical_battery | LAND | failsafes/low-battery | COM_LOW_BAT_ACT, BAT_LOW_THR, BAT_CRIT_THR, BAT_EMERGEN_THR |
+
+## 6. Decision
+
+Rule (spec §5.5): NO-GO if a check fails; else HOLD if a check is a gap; else GO.
+
+- Failed: none
+- Gaps: `sora.oso` (no concept): no verified concept in the bundle governs sora.oso
+
+## 7. Audit trail
+
+| Concept | Title | Verified | Source |
+|---|---|---|---|
+| failsafes/geofence-breach | Geofence breach | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Geofence, "Action on Breach: RTL / Loiter / Land / Warn Only". |
+| failsafes/lost-link | Lost link | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Loss of C2 Link: RTL / Land / Loiter". |
+| failsafes/low-battery | Low and critical battery | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Low Battery Trigger ... Action: RTL / Land" and "Critical Battery |
+| hazards/gps-jamming | GPS signal loss or jamming | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "GPS Signal Loss/Jamming". |
+| hazards/loss-of-c2 | Loss of C2 link | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Loss of C2 Link". |
+| hazards/loss-of-vlos | Loss of visual line of sight | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Loss of Visual Line of Sight (VLOS)". |
+| hazards/low-battery | Battery failure or low battery | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Battery Failure/Low Battery". |
+| hazards/midair-manned | Mid-air collision with manned aircraft | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Mid-Air Collision (Manned Aircraft)". |
+| hazards/midair-suas | Mid-air collision with other small UAS | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Mid-Air Collision (Other sUAS)". |
+| hazards/obstacle-ground | Collision with a ground obstacle | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Obstacle Collision (Ground)". |
+| hazards/payload-malfunction | Payload malfunction | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Payload Malfunction". |
+| hazards/public-interference | Public interference or disturbance | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Public Interference / Disturbance". |
+| hazards/weather-change | Extreme weather change | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "Extreme Weather Change". |
+| mavlink/nav-rtl | Return to launch (MAV_CMD_NAV_RETURN_TO_LAUNCH, 20) | human:cdevarenne 2026-09-28T21:00:00-07:00 | S9: MAVLink common message set, `MAV_CMD_NAV_RETURN_TO_LAUNCH` (20); `MAV_FRAME` enum. |
+| mavlink/nav-takeoff | Take off (MAV_CMD_NAV_TAKEOFF, 22) | human:cdevarenne 2026-09-28T21:00:00-07:00 | S9: MAVLink common message set, `MAV_CMD_NAV_TAKEOFF` (22); `MAV_FRAME` enum. |
+| regulations/easa-open | EASA 'open' category | human:cdevarenne 2026-09-28T21:00:00-07:00 | S1: Reg. (EU) 2019/947, consolidated 2025-05-01, Article 4(1)(b), (d), (e) and 4(2); Annex |
+| regulations/easa-specific-sora | EASA 'specific' category and SORA 2.5 | human:cdevarenne 2026-09-28T21:00:00-07:00 | S1: Reg. (EU) 2019/947, consolidated 2025-05-01, Article 5(1) and (2); Article 11(1). |
+| risk/arc | Air risk class (ARC) and TMPR | human:cdevarenne 2026-09-28T21:41:00-07:00 | S2: AMC1 Article 11, S.4.4.3, Figure 6 (p. 32); S.4.5.4 (p. 34); S.4.6.3, Table 6 (p. 35). |
+| risk/containment | Containment requirements | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.8.3, Tables 8 to 13 (pp. 38-41). |
+| risk/igrc | Intrinsic ground risk class (iGRC) | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.2.3 Table 1 (iGRC) and Table 2 (qualitative descriptors), |
+| risk/m1a | M1(A) Strategic mitigation: sheltering | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.3.3, Table 5 (p. 29). |
+| risk/sail | SAIL determination | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.7.3, SAIL determination table, p. 38 (the table caption reads |
+
+Pins: OKF `ad30107c31c06aec8a7d5636e0d1058118604e6f`, QGC plan 1 / mission 2, SORA 2.5.
+
+## 8. Approvals
+
+A person fills `signoff.yaml`. The tool leaves every approval field empty.
