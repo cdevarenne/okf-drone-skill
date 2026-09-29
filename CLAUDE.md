@@ -15,11 +15,14 @@ useful, secure, repeatable, composable, deterministic where it matters.
 - Every check and score cites a concept id. No concept -> coverage gap -> HOLD. Never a default value.
 - Code reads regulatory values only from the bundle. No threshold in code.
 - The tool never fills approval fields in `signoff.yaml`.
+- The sign-off decision is GO or NO-GO only. HOLD is not a sign-off value.
+- Metric everywhere. Where a source uses aviation units (ft, FL), keep them and give the metric value next to them.
 - Published numbers are generated, never typed: `docs/data/*.json` holds results; prose cites them.
 
 ## Working rules
 - The first commit is by Claude Code under its own identity. Every later commit is by `cdevarenne`. No Co-Authored-By trailer.
-- Work directly on `main`. No pull requests.
+- Work directly on `main`. No branches, no pull requests.
+- Commit dates are in PST: `TZ=America/Los_Angeles git commit`.
 - CI is manual-only. Do not run it.
 - The owner runs paid API steps locally, with a budget guard.
 - The owner reviews and verifies anything a person must approve: `verified` entries, eval labels, SORA content.
@@ -27,6 +30,8 @@ useful, secure, repeatable, composable, deterministic where it matters.
 - Specs go in `docs/specs/`, plans in `docs/plans/`.
 - Write docs, docstrings, comments and commit messages in ASD-STE100 Simplified Technical English.
 - Before every commit: ruff and pytest.
+- Keep input notes and source PDFs outside the repo. The owner supplies large PDFs via Google Drive.
+- PX4 SITL runs in the owner's Multipass VM (Ubuntu 24.04 aarch64), not on macOS.
 
 ## Toolchain
 Python 3.14 + uv. `uv sync`; `uv run pytest`; `make plan MISSION=missions/<id>.yaml`.
