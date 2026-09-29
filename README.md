@@ -19,12 +19,12 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 | 1 | OKF bundle: regulations, SORA 2.5 tables, hazards, failsafes, MAVLink, mission types | Done, verified by the owner |
 | 2 | `gen_plan`: mission request to QGroundControl `.plan` | Done |
 | 3 | `validate_plan`, `score_risk` | Done |
-| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Next |
+| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, owner review pending |
 | 5 | Screenshots, "How this was built" | Planned |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
 
-## How it works (v1 target)
+## How it works
 
 ```
 missions/<id>.yaml -> gen_plan -> validate_plan -> score_risk -> render_report
@@ -53,6 +53,20 @@ The tool writes `signoff.yaml` with empty approval fields. It never fills them.
 - Every concept has a `verified` entry from a person. The conformance test enforces this too.
 - A concept counts only if a person verified it; an unverified concept is a gap.
 
+## Seeded missions
+
+Five missions in [`missions/`](missions/) test the decision rule (spec §7):
+
+- m01: an open-category VLOS survey within all limits.
+- m02: an inspection above the open-category height limit.
+- m03: a search with a waypoint outside the declared geofence.
+- m04: a survey with no lost-link failsafe action.
+- m05: a specific-category BVLOS survey; the SORA OSO table is not in the bundle.
+
+`make seeded` runs them and writes the decisions, the failed checks, the gaps and the cited
+concepts to [`docs/data/seeded.json`](docs/data/seeded.json). The golden test fails if that file
+is not current.
+
 ## Knowledge bundle
 
 | Folder | Content | Sources |
@@ -76,7 +90,8 @@ Needs Python 3.14 and [uv](https://docs.astral.sh/uv/).
 make bootstrap   # uv sync
 make verify      # ruff and pytest
 make render      # OKF visualizer HTML of knowledge/ in out/knowledge-viz.html
-make plan MISSION=tests/fixtures/missions/survey.yaml  # writes mission.plan, validation.json, risk.json
+make plan MISSION=missions/m01-survey-open.yaml  # writes the five files in out/m01-survey-open/
+make seeded      # runs m01 to m05; writes docs/data/seeded.json
 ```
 
 ## How this was built
@@ -105,13 +120,14 @@ format versions, and the SORA edition.
 
 ```
 knowledge/                    OKF bundle
-missions/                     mission requests (Phase 4)
+missions/                     mission requests m01 to m05 and SEEDED.yaml
 .claude/skills/drone-mission-compliance/scripts/   okf_lib.py and the pipeline scripts
 .claude/skills/drone-mission-compliance/schemas/   mission request schema
 tests/                        unit and conformance tests
 tests/fixtures/missions/      fixture mission requests (one per mission type)
 docs/specs/, docs/plans/      spec and phase plans
 docs/sources.md               source register
+docs/data/                    generated results (make seeded)
 ```
 
 ## License
