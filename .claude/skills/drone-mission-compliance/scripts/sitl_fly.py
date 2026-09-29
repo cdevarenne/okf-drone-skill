@@ -68,6 +68,25 @@ def px4_env(mission: dict[str, Any], speed: float) -> dict[str, str]:
     }
 
 
+def running_px4() -> list[int]:
+    """Return the process ids of the PX4 processes that run now (none if pgrep is missing)."""
+    try:
+        out = subprocess.run(["pgrep", "-x", "px4"], capture_output=True, text=True, check=False)
+    except FileNotFoundError:
+        return []
+    return [int(pid) for pid in out.stdout.split()]
+
+
+def stop_px4(px4: subprocess.Popen, timeout_s: float = 10) -> None:
+    """Stop PX4. If it does not stop in `timeout_s`, kill it: no PX4 must stay after a run."""
+    px4.terminate()
+    try:
+        px4.wait(timeout=timeout_s)
+    except subprocess.TimeoutExpired:
+        px4.kill()
+        px4.wait()
+
+
 def fly(plan: dict[str, Any], params: dict[str, int], timeout_s: float) -> tuple[list, dict]:
     """Connect to PX4, set the params, upload and fly the plan. Return the track and params."""
     from mavlink_gcs import (
@@ -136,6 +155,8 @@ def run(
     timeout_s: float,
 ) -> dict[str, Any]:
     """Start PX4, fly the mission, stop PX4, and return the sitl.json document."""
+    if pids := running_px4():  # it holds PX4 instance 0: the new PX4 cannot start
+        raise SitlError(f"PX4 already runs (process {pids}); stop it with: pkill -x px4")
     mission = load_mission(mission_path)
     folder = out / mission["id"]
     plan_text = (folder / "mission.plan").read_text(encoding="utf-8")
@@ -158,8 +179,7 @@ def run(
     try:
         track, params = fly(json.loads(plan_text), failsafe_params(mission, bundle), timeout_s)
     finally:
-        px4.terminate()
-        px4.wait(timeout=30)
+        stop_px4(px4)
     checks = check_track(mission, json.loads(plan_text), track, params, bundle)
     air = [p for p in track if p["in_air"]]
     log = (work / "px4.log").read_text(encoding="utf-8", errors="replace").splitlines()
