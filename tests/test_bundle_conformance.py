@@ -146,3 +146,9 @@ def test_hazard_scores(concept) -> None:
     for key in ("likelihood", "severity"):
         assert isinstance(fm.get(key), int) and 1 <= fm[key] <= 5, f"{concept.path}: {key}"
     assert fm.get("residual") in {"Low", "Medium", "High"}, concept.path
+
+
+@pytest.mark.parametrize("concept", CONCEPTS, ids=lambda c: c.id)
+def test_every_concept_is_human_verified(concept) -> None:
+    verified = concept.frontmatter.get("verified") or []
+    assert any(str(e.get("by", "")).startswith("human:") for e in verified), concept.path
