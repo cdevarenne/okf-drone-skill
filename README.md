@@ -19,7 +19,7 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 | 1 | OKF bundle: regulations, SORA 2.5 tables, hazards, failsafes, MAVLink, mission types | Done, verified by the owner |
 | 2 | `gen_plan`: mission request to QGroundControl `.plan` | Done |
 | 3 | `validate_plan`, `score_risk` | Done |
-| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, owner review pending |
+| 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
 | 5 | Screenshots, "How this was built" | Planned |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
@@ -108,8 +108,9 @@ Built with an AI coding agent (Claude Code) under a written process. The record 
   a source document that the owner had read and marked `read`. The local copies are checked by
   SHA-256. Reading the source corrected one assumption (the 120 m limit is Article 4(1)(e) of
   Reg. (EU) 2019/947, not 4(1)(d)).
-- **Human gates.** The owner read the sources (Phase 0) and verified every concept (Phase 1)
-  before the next phase.
+- - **Human gates.** The owner read the sources (Phase 0), verified every concept (Phase 1), and
+  reviewed the reports of the seeded missions m01 to m05 (Phase 4) before the next phase. The
+  tool only proposes a decision; in the Phase 4 review, the owner filled `signoff.yaml` by hand.
 
 ## Pins
 
