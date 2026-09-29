@@ -1,12 +1,17 @@
 include tools.lock
 
+SCRIPTS := .claude/skills/drone-mission-compliance/scripts
+
 PY := uv run python
 OKF := reference-agent @ git+https://github.com/GoogleCloudPlatform/open-knowledge-format@$(OKF_COMMIT)
 
-.PHONY: bootstrap test lint verify render clean
+.PHONY: bootstrap plan test lint verify render clean
 
 bootstrap:
 	uv sync
+
+plan:
+	$(PY) $(SCRIPTS)/gen_plan.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out
 
 test:
 	uv run pytest -q
