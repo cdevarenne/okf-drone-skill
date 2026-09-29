@@ -37,6 +37,17 @@ The initial ARC comes from the decision tree: use the first entry of `initial_ar
 Above 500 ft AGL and below FL600, uncontrolled airspace gives ARC-c over urban and over rural
 areas. Below 500 ft AGL, uncontrolled airspace over rural areas gives ARC-b.
 
+# Units
+
+The source gives these limits in aviation units, as on aeronautical charts. The keys keep them.
+
+- 500 ft AGL = 152.4 m above ground level (1 ft = 0.3048 m, exact).
+- FL600 is a pressure altitude of 60 000 ft (about 18 300 m in the standard atmosphere), not
+  a height above ground.
+
+The operator declares `above_500ft_agl` and `above_fl600` as true or false for the operational
+volume. The code does no unit conversion.
+
 For VLOS operations, and for BVLOS operations with airspace observers, the initial ARC can be
 reduced by one class. This reduction cannot give ARC-a. Other strategic mitigations (Annex C)
 are not in v1.
