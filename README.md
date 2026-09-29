@@ -17,8 +17,8 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 |---|---|---|
 | 0 | Scaffold, pinned versions, `.plan` subset schema, source register | Done |
 | 1 | OKF bundle: regulations, SORA 2.5 tables, hazards, failsafes, MAVLink, mission types | Done, verified by the owner |
-| 2 | `gen_plan`: mission request to QGroundControl `.plan` | Next |
-| 3 | `validate_plan`, `score_risk` | Planned |
+| 2 | `gen_plan`: mission request to QGroundControl `.plan` | Done |
+| 3 | `validate_plan`, `score_risk` | Next |
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Planned |
 | 5 | Screenshots, "How this was built" | Planned |
 
@@ -75,6 +75,7 @@ Needs Python 3.14 and [uv](https://docs.astral.sh/uv/).
 make bootstrap   # uv sync
 make verify      # ruff and pytest
 make render      # OKF visualizer HTML of knowledge/ in out/knowledge-viz.html
+make plan MISSION=tests/fixtures/missions/survey.yaml  # writes out/survey/mission.plan
 ```
 
 ## How this was built
@@ -105,7 +106,9 @@ format versions, and the SORA edition.
 knowledge/                    OKF bundle
 missions/                     mission requests (Phase 4)
 .claude/skills/drone-mission-compliance/scripts/   okf_lib.py and the pipeline scripts
-tests/                        conformance, loader, SORA table and check-id tests; fixtures
+.claude/skills/drone-mission-compliance/schemas/   mission request schema
+tests/                        unit and conformance tests
+tests/fixtures/missions/      fixture mission requests (one per mission type)
 docs/specs/, docs/plans/      spec and phase plans
 docs/sources.md               source register
 ```
