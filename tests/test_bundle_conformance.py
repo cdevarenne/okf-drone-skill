@@ -29,6 +29,9 @@ EXPECTED: dict[str, set[str]] = {
     },
     "Risk Table": {f"risk/{t}" for t in ("igrc", "arc", "sail", "containment")},
     "Mitigation": {f"risk/{m}" for m in ("m1a", "m1b", "m1c", "m2")},
+    "MAVLink Command": {
+        f"mavlink/{c}" for c in ("nav-takeoff", "nav-waypoint", "nav-rtl", "nav-land")
+    },
 }
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)
@@ -94,3 +97,16 @@ def test_source_cites_only_read_documents(concept) -> None:
     status = source_status()
     for sid in sorted(cited):
         assert status.get(sid, "").startswith("read"), f"{concept.path}: {sid} is not read"
+
+
+def test_mavlink_commands_have_an_id_and_seven_params() -> None:
+    ids = {
+        "mavlink/nav-waypoint": 16,
+        "mavlink/nav-rtl": 20,
+        "mavlink/nav-land": 21,
+        "mavlink/nav-takeoff": 22,
+    }
+    for cid, number in ids.items():
+        table = BUNDLE.concepts[cid].table
+        assert table["mavlink_id"] == number, cid
+        assert len(table["params"]) == 7, cid
