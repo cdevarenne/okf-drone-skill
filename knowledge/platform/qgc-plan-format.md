@@ -6,6 +6,9 @@ tags: [qgc, plan-format, mission, geofence]
 generated:
   by: claude-code
   at: "2026-09-28T20:11:00-07:00"
+verified:
+  - by: "human:cdevarenne"
+    at: "2026-09-28T21:00:00-07:00"
 ---
 # Rule
 
