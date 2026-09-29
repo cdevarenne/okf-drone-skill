@@ -35,6 +35,21 @@ EXPECTED: dict[str, set[str]] = {
     "Failsafe": {
         f"failsafes/{f}" for f in ("lost-link", "low-battery", "geofence-breach", "gps-loss")
     },
+    "Hazard": {
+        f"hazards/{h}"
+        for h in (
+            "loss-of-c2",
+            "gps-jamming",
+            "low-battery",
+            "midair-manned",
+            "midair-suas",
+            "obstacle-ground",
+            "loss-of-vlos",
+            "public-interference",
+            "payload-malfunction",
+            "weather-change",
+        )
+    },
 }
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)
@@ -120,3 +135,13 @@ def test_failsafes_name_actions_and_px4_parameters() -> None:
         table = concept.table
         assert table["actions"] and all(isinstance(a, str) for a in table["actions"]), concept.id
         assert table["px4_params"] and all(p.isupper() for p in table["px4_params"]), concept.id
+
+
+@pytest.mark.parametrize(
+    "concept", [c for c in CONCEPTS if c.type == "Hazard"], ids=lambda c: c.id
+)
+def test_hazard_scores(concept) -> None:
+    fm = concept.frontmatter
+    for key in ("likelihood", "severity"):
+        assert isinstance(fm.get(key), int) and 1 <= fm[key] <= 5, f"{concept.path}: {key}"
+    assert fm.get("residual") in {"Low", "Medium", "High"}, concept.path
