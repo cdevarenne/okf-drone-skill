@@ -41,6 +41,17 @@ missions/<id>.yaml -> gen_plan -> validate_plan -> score_risk -> render_report
 
 The tool writes `signoff.yaml` with empty approval fields. It never fills them.
 
+### Optional: fly the plan in PX4 SITL (DRN-10)
+
+`make sitl MISSION=missions/<id>.yaml` (after `make plan`) flies `mission.plan` in PX4
+software-in-the-loop: the SIH quadrotor, headless, at the mission home. It sets the declared
+failsafe actions from the `px4_action` values in the bundle, uploads the geofence and the
+mission, and checks the flown track against the same concepts: the height limit, the geofence,
+the return, and the failsafe parameters that PX4 reads back. It writes `sitl.json`,
+`sitl_track.json` and the PX4 logs in `out/<id>/`. The flight is evidence for the person who
+signs; it is not an approval and does not change the proposed decision. See
+[`docs/specs/2026-09-28-drn-10-px4-sitl.md`](docs/specs/2026-09-28-drn-10-px4-sitl.md).
+
 ## How grounding works
 
 - Every check and every score cites a concept id in `knowledge/`. A check id is on exactly one
@@ -114,7 +125,12 @@ make render      # OKF visualizer HTML of knowledge/ in out/knowledge-viz.html
 make plan MISSION=missions/m01-survey-open.yaml  # writes the five files in out/m01-survey-open/
 make seeded      # runs m01 to m05; writes docs/data/seeded.json
 make examples    # writes examples/ and docs/data/seeded.json
+make px4         # optional, once: clone and build the pinned PX4 SITL in .tools/px4
+make sitl MISSION=missions/m01-survey-open.yaml  # optional: fly the plan in PX4 SITL
 ```
+
+`make px4` needs the PX4 build tools (C++ toolchain, CMake, Ninja); on macOS, see the PX4
+development environment setup.
 
 ## How this was built
 
@@ -158,12 +174,14 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - Multicopters only; convex areas; three patterns (grid, corridor, expanding square);
   `SimpleItem` mission items only.
 - EU rules only: no FAA Part 107, no national additions (for example DGAC).
-- No simulation and no LLM step.
+- No LLM step.
+- PX4 SITL (optional) flies the SIH quadrotor only: no wind, no sensor faults, and no injected
+  failsafe events.
 
 ## What's next
 
 - DRN-09: optional LLM steps that the owner runs, outside `make plan`.
-- DRN-10: fly the generated plans in PX4 SITL.
+- The SITL results in the report, and failsafe tests in SITL (for example a data-link loss).
 - The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
 - Terrain data, so that the height check can run on varied terrain.
 
