@@ -9,7 +9,7 @@ a knowledge-grounded agent finds the rules, makes an artifact, validates it agai
 scores the risk, and writes a document that a person signs.
 
 **Scope:** mission planning, safety and regulatory compliance for civil operations in the EU.
-No flight controller, no live NOTAM or weather feeds, no simulation in v1.
+No flight controller, no live NOTAM or weather feeds in v1.
 
 ## Status
 
