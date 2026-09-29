@@ -11,6 +11,7 @@ the `sitl` extra (MAVSDK). It calls no LLM.
 from __future__ import annotations
 
 import argparse
+import ctypes
 import json
 import os
 import shutil
@@ -68,8 +69,21 @@ def px4_env(mission: dict[str, Any], speed: float) -> dict[str, str]:
     }
 
 
+def load_cxx_runtime() -> None:
+    """On Linux, load the system C++ runtime with global symbols before MAVSDK loads.
+
+    The MAVSDK 4.0.1 aarch64 Linux wheel uses a libstdc++ function
+    (`__atomic_futex_unsigned_base::_M_futex_wait_until`) but does not declare libstdc++ as a
+    dependency, so its library does not load (for example on Ubuntu 24.04 arm64 in Multipass on
+    Apple Silicon). The x86_64 wheel does not need this; loading the runtime does no harm.
+    """
+    if sys.platform.startswith("linux"):
+        ctypes.CDLL("libstdc++.so.6", mode=ctypes.RTLD_GLOBAL)
+
+
 def fly(plan_text: str, params: dict[str, int], timeout_s: float) -> tuple[list, dict]:
     """Connect to PX4, set the params, upload and fly the plan. Return the track and params."""
+    load_cxx_runtime()
     from mavsdk import ComponentType, Configuration, Mavsdk
     from mavsdk.plugins.action import Action, ActionError
     from mavsdk.plugins.mission_raw import MissionRaw, MissionRawError

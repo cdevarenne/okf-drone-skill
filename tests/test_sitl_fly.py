@@ -1,14 +1,16 @@
 """Check the parts of sitl_fly that do not need PX4: parameters, environment, errors (DRN-10)."""
 
+import ctypes
 import json
 import shutil
 import subprocess
 import sys
 from pathlib import Path
 
+import pytest
 from bundle_helpers import BUNDLE
 from mission import load_mission
-from sitl_fly import SIH_QUADX, failsafe_params, main, px4_env
+from sitl_fly import SIH_QUADX, failsafe_params, load_cxx_runtime, main, px4_env
 
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPTS = ROOT / ".claude" / "skills" / "drone-mission-compliance" / "scripts"
@@ -41,6 +43,17 @@ def test_px4_env_starts_sih_at_the_mission_home() -> None:
         str(m["home"]["amsl_m"]),
     )
     assert env["PX4_SIM_SPEED_FACTOR"] == "10" and env["HEADLESS"] == "1"
+
+
+@pytest.mark.skipif(not sys.platform.startswith("linux"), reason="Linux only")
+def test_cxx_runtime_symbol_is_global_on_linux() -> None:
+    """The MAVSDK 4.0.1 aarch64 wheel needs this libstdc++ symbol but does not link libstdc++."""
+    load_cxx_runtime()
+    symbol = (
+        "_ZNSt28__atomic_futex_unsigned_base19_M_futex_wait_until"
+        "EPjjbNSt6chrono8durationIlSt5ratioILl1ELl1EEEENS2_IlS3_ILl1ELl1000000000EEEE"
+    )
+    assert hasattr(ctypes.CDLL(None), symbol)
 
 
 def test_module_imports_without_mavsdk() -> None:
