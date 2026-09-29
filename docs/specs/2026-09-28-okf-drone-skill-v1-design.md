@@ -48,7 +48,7 @@ controller, computer vision, ROS.
 | Python | `>=3.14`, uv | Same as the template |
 | OKF spec | v0.2, `GoogleCloudPlatform/open-knowledge-format` @ `ad30107c31c0` | Template pin. DRN-02 checks for a newer commit. |
 | QGC plan format | `fileType: Plan`, `version: 1`; `mission.version: 2`; `geoFence.version: 2`; `rallyPoints.version: 2` | [QGC plan file format](https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/file_formats/plan.html). Vendor a subset schema in `tests/fixtures/`. |
-| SORA | JARUS SORA 2.5, as adopted in EASA AMC & GM to Reg. (EU) 2019/947 by [ED Decision 2025/018/R](https://easa.europa.eu/en/document-library/agency-decisions/ed-decision-2025018r) | Source text: [JARUS SORA 2.5 main body](http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf). Applicability and transition dates: not yet read (DRN-02). |
+| SORA | JARUS SORA 2.5, as adopted in EASA AMC & GM to Reg. (EU) 2019/947 by [ED Decision 2025/018/R](https://easa.europa.eu/en/document-library/agency-decisions/ed-decision-2025018r) | Source text: [JARUS SORA 2.5 main body](http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf). Primary text: the Decision annex, AMC & GM Issue 1, Amendment 4 (renamed from Amendment 3 by the corrigendum of 12 December 2025; no content change). The annex states no applicability date. |
 
 **SORA 2.5 changes that affect the existing slice** (`drone_sora_hazards_bundle.md` uses 2.0):
 
