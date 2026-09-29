@@ -5,13 +5,12 @@ upload the geofence and the mission, fly it, record the track, and write out/<id
 and out/<id>/sitl_track.json. The PX4 flight log (.ulg) stays in out/<id>/sitl/.
 
 This step is optional and not part of `make plan`: it needs a PX4 SITL build (`make px4`) and
-the `sitl` extra (MAVSDK). It calls no LLM.
+the `sitl` extra (pymavlink). It calls no LLM.
 """
 
 from __future__ import annotations
 
 import argparse
-import ctypes
 import json
 import os
 import shutil
@@ -28,7 +27,7 @@ from results import governing
 from sitl_check import check_track
 
 SIH_QUADX = "10040"  # PX4 airframe 10040_sihsim_quadx (headless SIH simulator)
-GCS_URL = "udpin://0.0.0.0:14550"  # PX4 SITL "Normal" MAVLink link; arming needs a GCS here
+GCS_URL = "udpin:0.0.0.0:14550"  # PX4 SITL "Normal" MAVLink link; arming needs a GCS here
 SAMPLE_S = 0.2  # wall-clock time between track samples
 START_TRIES_S = 20  # wall-clock seconds to get PX4 into Mission mode
 
@@ -69,80 +68,61 @@ def px4_env(mission: dict[str, Any], speed: float) -> dict[str, str]:
     }
 
 
-def load_cxx_runtime() -> None:
-    """On Linux, load the system C++ runtime with global symbols before MAVSDK loads.
-
-    The MAVSDK 4.0.1 aarch64 Linux wheel uses a libstdc++ function
-    (`__atomic_futex_unsigned_base::_M_futex_wait_until`) but does not declare libstdc++ as a
-    dependency, so its library does not load (for example on Ubuntu 24.04 arm64 in Multipass on
-    Apple Silicon). The x86_64 wheel does not need this; loading the runtime does no harm.
-    """
-    if sys.platform.startswith("linux"):
-        ctypes.CDLL("libstdc++.so.6", mode=ctypes.RTLD_GLOBAL)
-
-
-def fly(plan_text: str, params: dict[str, int], timeout_s: float) -> tuple[list, dict]:
+def fly(plan: dict[str, Any], params: dict[str, int], timeout_s: float) -> tuple[list, dict]:
     """Connect to PX4, set the params, upload and fly the plan. Return the track and params."""
-    load_cxx_runtime()
-    from mavsdk import ComponentType, Configuration, Mavsdk
-    from mavsdk.plugins.action import Action, ActionError
-    from mavsdk.plugins.mission_raw import MissionRaw, MissionRawError
-    from mavsdk.plugins.param import Param
-    from mavsdk.plugins.telemetry import FlightMode, Telemetry
+    from mavlink_gcs import (
+        CMD_ARM_DISARM,
+        CMD_MISSION_START,
+        MISSION_TYPE_FENCE,
+        MISSION_TYPE_MISSION,
+        RESULT_ACCEPTED,
+        Gcs,
+        GcsError,
+        fence_items,
+        mission_items,
+    )
 
-    sdk = Mavsdk(Configuration.create_with_component_type(ComponentType.GROUND_STATION))
-    sdk.add_any_connection(GCS_URL)
-    system = sdk.first_autopilot(30.0)
-    if system is None:
-        raise SitlError("no autopilot on the GCS link")
-    tel, act, mr, par = Telemetry(system), Action(system), MissionRaw(system), Param(system)
-    deadline = time.time() + 60
-    while not tel.health_all_ok():
-        if time.time() > deadline:
-            raise SitlError(f"PX4 health not ok: {tel.health()}")
-        time.sleep(0.5)
-    read_back = {}
-    for name, value in params.items():
-        par.set_param_int(name, value)
-        read_back[name] = par.get_param_int(name)
-    data = mr.import_qgroundcontrol_mission_from_string(plan_text)
-    mr.upload_geofence(data.geofence_items)
-    mr.upload_mission(data.mission_items)
-    for _ in range(30):  # PX4 needs a few seconds to register the GCS before it arms
-        try:
-            act.arm()
-            break
-        except ActionError:  # PX4 denies arming until it registers the GCS
-            time.sleep(1)
-    else:
-        raise SitlError("PX4 did not arm")
-    for _ in range(START_TRIES_S):  # PX4 checks a new mission before it allows Mission mode
-        try:
-            mr.start_mission()
-        except MissionRawError:
-            pass
-        time.sleep(1)
-        if tel.flight_mode() == FlightMode.MISSION or tel.in_air() or not tel.armed():
-            break
-    track, start, flew = [], time.time(), False
-    while time.time() - start < timeout_s:
-        p, prog = tel.position(), mr.mission_progress()
-        point = {
-            "t_s": round(time.time() - start, 2),
-            "lat": p.latitude_deg,
-            "lon": p.longitude_deg,
-            "rel_alt_m": round(p.relative_altitude_m, 2),
-            "armed": tel.armed(),
-            "in_air": tel.in_air(),
-            "mission_seq": prog.current,
-            "mission_total": prog.total,
-        }
-        track.append(point)
-        flew = flew or point["in_air"]
-        if not point["armed"] and (flew or point["t_s"] > START_TRIES_S):
-            break  # landed after the flight, or PX4 disarmed without a flight
-        time.sleep(SAMPLE_S)
-    return track, read_back
+    gcs = Gcs(GCS_URL)
+    try:
+        gcs.wait_position(60)
+        read_back = {name: gcs.set_param_int(name, value) for name, value in params.items()}
+        gcs.upload(fence_items(plan), MISSION_TYPE_FENCE)
+        gcs.upload(mission_items(plan), MISSION_TYPE_MISSION)
+        for _ in range(30):  # PX4 denies arming until it registers the GCS
+            if gcs.command(CMD_ARM_DISARM, 1) == RESULT_ACCEPTED:
+                break
+            gcs.pump(1)
+        else:
+            raise SitlError("PX4 did not arm")
+        for _ in range(START_TRIES_S):  # PX4 checks a new mission before it allows Mission mode
+            gcs.command(CMD_MISSION_START, 0, 0)
+            gcs.pump(1)
+            if gcs.in_mission_mode() or gcs.in_air() or not gcs.state["armed"]:
+                break
+        track, start, flew = [], time.time(), False
+        while time.time() - start < timeout_s:
+            gcs.pump(SAMPLE_S)
+            s = gcs.state
+            done, total = gcs.progress()
+            point = {
+                "t_s": round(time.time() - start, 2),
+                "lat": s["lat"],
+                "lon": s["lon"],
+                "rel_alt_m": round(s["rel_alt_m"], 2),
+                "armed": s["armed"],
+                "in_air": gcs.in_air(),
+                "mission_seq": done,
+                "mission_total": total,
+            }
+            track.append(point)
+            flew = flew or point["in_air"]
+            if not point["armed"] and (flew or point["t_s"] > START_TRIES_S):
+                break  # landed after the flight, or PX4 disarmed without a flight
+        return track, read_back
+    except GcsError as e:
+        raise SitlError(str(e)) from e
+    finally:
+        gcs.close()
 
 
 def run(
@@ -175,7 +155,7 @@ def run(
         stderr=subprocess.STDOUT,
     )
     try:
-        track, params = fly(plan_text, failsafe_params(mission, bundle), timeout_s)
+        track, params = fly(json.loads(plan_text), failsafe_params(mission, bundle), timeout_s)
     finally:
         px4.terminate()
         px4.wait(timeout=30)

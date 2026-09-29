@@ -76,7 +76,7 @@ def _flown_return(track: Track, bundle: Bundle) -> CheckResult:
     if c is None:
         return no_concept(cid)
     total = max((p["mission_total"] for p in track), default=0)
-    done = max((p["mission_seq"] for p in track), default=0)  # MAVSDK: current == total at the end
+    done = max((p["mission_seq"] for p in track), default=0)  # equals the total when the mission is complete
     last = track[-1] if track else None
     landed = last is not None and not last["in_air"] and not last["armed"]
     ev = f"mission progress {done} of {total}; landed and disarmed: {landed}"
