@@ -1,7 +1,8 @@
 # okf-drone-skill v1 — Design Spec
 
 - **Date:** 2026-09-28
-- **Status:** draft; owner decisions recorded (§10)
+- **Status:** v1 implemented; the owner reviewed the seeded missions (2026-09-28). Owner
+  decisions are in §10.
 - **Tracking:** `DevMoi/backlog.csv` DRN-01..DRN-08
 - **Template:** `cdevarenne/okf-grc-skill` (layout, bundle conventions, `okf_lib`, grounding rule, method)
 - **Sources:** `drone_flightplan_usecase.md`, `drone_sora_hazards_bundle.md`, `Comprehensive Drone Flight Plan Template.md`. Optional: `DroneControlSW.02.md`.
@@ -24,6 +25,17 @@ go / no-go report for a human to sign.
 4. `mission.plan` validates against the vendored `.plan` subset schema.
 5. The bundle conformance test passes, and each concept carries `verified`.
 6. `make render` writes the OKF visualizer HTML for `knowledge/`.
+
+**Evidence (2026-09-28):**
+
+| # | Evidence |
+|---|---|
+| 1 | `tests/test_render_report.py`; `make plan MISSION=missions/m01-survey-open.yaml` |
+| 2 | `tests/test_seeded.py`; [`docs/data/seeded.json`](../data/seeded.json) (generated) |
+| 3 | `tests/test_validate_plan.py`, `tests/test_score_risk.py`, `tests/test_check_ids.py` |
+| 4 | `tests/test_gen_plan.py`; `tests/test_seeded.py` (every seeded plan) |
+| 5 | `tests/test_bundle_conformance.py` (`test_every_concept_is_human_verified`) |
+| 6 | `make render` on the owner's machine (Python 3.14.7) |
 
 **Out of scope for v1:** simulation (PX4 SITL is DRN-10), live NOTAM / TFR / weather feeds,
 LLM steps (DRN-09), fleet operations, FAA Part 107, national (DGAC) additions, a flight
@@ -58,8 +70,8 @@ controller, computer vision, ROS.
 - Containment has low, medium and high levels and is assessed earlier.
 
 Source for these three points: [EU Drone Port, SORA 2.5 summary](https://eudroneport.com/blog/sora-2-5-european-uas-operations/)
-(secondary). DRN-02 confirms them in the JARUS main body. Not yet confirmed: the status of M3 (ERP),
-the OSO count, and the SAIL table values.
+(secondary). DRN-02 confirmed them in S2 and S4 (see `docs/sources.md`): M3 (ERP) is removed
+in 2.5, there are 17 OSOs, and the SAIL table is as in `risk/sail`.
 
 ## 4. Repository layout
 
@@ -260,6 +272,9 @@ The golden test runs them again and checks that `docs/data/seeded.json` is curre
 | 4 | report + loop (DRN-07) | owner reviews m01–m05 output |
 | 5 | screenshots, README "How this was built" | — |
 
+State (2026-09-28): phases 0 to 4 are done, and their human gates passed. The plans are in
+`docs/plans/`.
+
 ## 10. Decisions (owner, 2026-09-28)
 
 1. Repo name: `okf-drone-skill`.
@@ -269,3 +284,11 @@ The golden test runs them again and checks that `docs/data/seeded.json` is curre
 4. Population density and all other SORA values: SORA 2.5 as adopted by EASA in 2025
    (ED Decision 2025/018/R). Not SORA 2.0. The owner reads the iGRC table in DRN-02 before
    the bundle uses it.
+5. Height rule: the plan altitudes are relative to home. With `terrain: flat` the check
+   compares them with the 120 m limit; with `terrain: varied` it is a gap (Phase 2).
+6. Units: metric everywhere. Where the source uses aviation units (500 ft AGL, FL600), the
+   bundle keeps them and gives the metric value next to them (Phase 3).
+7. `px4_action` and `px4_level` in the failsafe concepts; lost link covers the data link and
+   the RC link; S2 values where S2 and S4 differ (Phase 1).
+8. The sign-off `decision` is GO or NO-GO. HOLD is a proposal of the tool, not a sign-off
+   value (Phase 4).
