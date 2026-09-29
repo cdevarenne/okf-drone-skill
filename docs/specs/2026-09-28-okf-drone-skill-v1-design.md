@@ -108,19 +108,30 @@ okf-drone-skill/
 ### 5.2 Mission request (`missions/<id>.yaml`)
 
 ```yaml
-id: m01-survey-open
-mission_type: mapping-survey
+id: m01-survey-open       # the file name without .yaml
+mission_type: mapping-survey  # a concept in mission-types/
 category: open            # open | specific
 operation: VLOS           # VLOS | BVLOS
-area: {polygon: [[lat, lon], ...]}
-max_altitude_agl_m: 100
+home: {lat: 44.7990, lon: -0.6000, amsl_m: 50}  # takeoff point; plannedHomePosition
+terrain: flat             # flat | varied
+area: {polygon: [[lat, lon], ...]}      # convex; the pattern stays inside it
+geofence: {polygon: [[lat, lon], ...]}  # the inclusion polygon in the .plan
+max_altitude_agl_m: 100   # the altitude of every item, relative to home
+speed_ms: 8               # cruise and hover speed in the .plan
+pattern: {spacing_m: 40}  # grid; expanding square adds datum: [lat, lon];
+                          # corridor is {route: [[lat, lon], ...]}
 ua: {mtom_kg: 0.9, char_dimension_m: 0.35, max_speed_ms: 15}
 ground: {population_density: sparsely-populated}  # value set comes from risk/igrc.md
 airspace: {class: G, declared_by: operator}
 failsafes: {lost_link: RTL, low_battery: RTL, critical_battery: LAND, geofence_breach: RTL}
 ```
 
+The schema is `.claude/skills/drone-mission-compliance/schemas/mission.schema.json` (Phase 2).
+Value sets that come from the bundle (mission types, population density bands, failsafe
+actions) are not in the schema; the pipeline checks them against the bundle.
+
 Airspace, NOTAM and weather are **declared inputs** in v1. The report says so.
+Terrain is a declared input too: v1 has no terrain data (see §6, `alt.max_agl`).
 Failsafes are vehicle parameters, not part of the `.plan` file. v1 checks the declared values.
 DRN-02 records the matching PX4 parameter names in `failsafes/*.md`.
 
@@ -146,10 +157,16 @@ Each value cites its concept. A missing or unverified table gives `"not_assessed
 `gen_plan | validate_plan | score_risk | render_report`, file-based, one purpose each.
 
 1. `okf_lib.load_bundle` (copied from the template, then extended for `checks` and `table`).
-2. `gen_plan`: pattern by mission type (grid, corridor, expanding square). Writes takeoff,
-   waypoints, RTL, and the geofence inclusion polygon.
+2. `gen_plan`: pattern by mission type (grid, corridor, expanding square; the pattern name
+   comes from the mission-type concept). Writes takeoff at `home`, the pattern waypoints, RTL,
+   and the declared geofence polygon. It writes what the request asks for and never corrects
+   it; `validate_plan` judges the result. A mission type or command with no concept is a gap.
 3. `validate_plan`: v1 checks: altitude ceiling, all waypoints inside geofence, first item is
    takeoff, last item is RTL or land, declared failsafes present, category matches operation.
+   Height rule (`alt.max_agl`): the plan altitudes are relative to home, and the
+   `regulations/easa-open` limit is from the closest point of the surface. With
+   `terrain: flat`, the check compares the plan altitudes with the limit. With
+   `terrain: varied`, v1 has no terrain data, so the check is a gap (HOLD).
 4. `score_risk`: hazard matrix from `hazards/`; SORA summary from `risk/` tables.
 5. `render_report`: fills the flight-plan template sections, the decision and the audit trail.
 
@@ -159,9 +176,9 @@ Each value cites its concept. A missing or unverified table gives `"not_assessed
 |---|---|---|
 | m01 | open category, VLOS, within all limits | GO |
 | m02 | altitude above the open-category ceiling | NO-GO, cites `regulations/easa-open` |
-| m03 | one waypoint outside the geofence | NO-GO |
+| m03 | one waypoint outside the geofence (the declared geofence does not contain the area) | NO-GO, cites `failsafes/geofence-breach` |
 | m04 | no lost-link failsafe declared | NO-GO, cites `failsafes/lost-link` |
-| m05 | specific category, BVLOS, SORA table not in bundle | HOLD (gap), not GO |
+| m05 | specific category, BVLOS; the OSO table (`sora.oso`) is not in the bundle | HOLD (gap), not GO |
 
 ## 8. Testing and verification
 
