@@ -73,3 +73,12 @@ def test_containment_tables_cover_every_sail_once() -> None:
         for row in t["rows"]:
             assert len(row["robustness"]) == len(t["columns"]), t["id"]
             assert set(row["robustness"]) <= ROBUSTNESS, t["id"]
+
+
+def test_mitigations_have_a_sequence_and_credits() -> None:
+    mitigations = BUNDLE.of_type("Mitigation")
+    assert sorted(m.table["sequence"] for m in mitigations) == [1, 2, 3, 4]
+    for m in mitigations:
+        credit = m.table["credit"]
+        assert set(credit) == {"low", "medium", "high"}, m.id
+        assert all(v is None or (isinstance(v, int) and v < 0) for v in credit.values()), m.id

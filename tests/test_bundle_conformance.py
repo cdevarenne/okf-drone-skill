@@ -28,6 +28,7 @@ EXPECTED: dict[str, set[str]] = {
         for m in ("mapping-survey", "infrastructure-inspection", "search-pattern")
     },
     "Risk Table": {f"risk/{t}" for t in ("igrc", "arc", "sail", "containment")},
+    "Mitigation": {f"risk/{m}" for m in ("m1a", "m1b", "m1c", "m2")},
 }
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)
