@@ -1,0 +1,15 @@
+[project]
+name = "okf-drone-skill"
+version = "0.1.0"
+requires-python = ">=3.14"
+dependencies = ["pyyaml>=6.0.2"]
+
+[dependency-groups]
+dev = ["pytest>=8.4", "jsonschema>=4.25", "ruff>=0.13"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = [".claude/skills/drone-mission-compliance/scripts"]
+
+[tool.ruff]
+line-length = 100

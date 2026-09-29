@@ -1,0 +1,10 @@
+# Pinned external versions. Read by the Makefile and tests/test_tools_lock.py.
+# OKF v0.2 spec and reference visualizer (GoogleCloudPlatform/open-knowledge-format). No tags exist; pin by commit.
+OKF_COMMIT=ad30107c31c06aec8a7d5636e0d1058118604e6f
+# QGroundControl .plan format: https://docs.qgroundcontrol.com/master/en/qgc-dev-guide/file_formats/plan.html
+QGC_PLAN_VERSION=1
+QGC_MISSION_VERSION=2
+QGC_GEOFENCE_VERSION=2
+QGC_RALLY_VERSION=2
+# JARUS SORA edition, as adopted by EASA ED Decision 2025/018/R.
+SORA_EDITION=2.5
