@@ -27,6 +27,7 @@ Downloaded by the owner on 2026-09-28 (local time). Kept outside the repo; not r
 | `annex_to_ed_decision_2025-018-r_1.pdf` | S2 | https://www.easa.europa.eu/en/downloads/142514/en | 3448513 | `4733d5501b55297ed2b27cd8dceeb1eee3268af05f9421318bc54b452f83999e` |
 | `corrigendum_to_ed_decision_2025-018-r.pdf` | S2 | https://www.easa.europa.eu/en/downloads/142969/en | 167350 | `b810d348896c3cecf34365e41a9275533f8e13649659f2d2872f48ed35119ff3` |
 | `SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf` | S4 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf | 1344663 | `2471913e55c38999dc5ba0894ac696c3e4722ddb0956b1c62f15e6fbd9a1be1c` |
+| `ConsolidatedTEXT32019R0947EN01.05.2025.pdf` (browser print of the EUR-Lex HTML, 67 pages, 2026-09-28) | S1 | https://eur-lex.europa.eu/legal-content/EN/TXT/HTML/?uri=CELEX:02019R0947-20250501 | 954583 | `9298a922a503e7e02d890efcae4fb99d0ac5dc34b61ca110b02f641cf2da2280` |
 
 The Decision itself (2 pages, not stored locally): https://www.easa.europa.eu/en/downloads/142510/en.
 Per that text (read by agent 2026-09-28, confirmed by cdevarenne 2026-09-28), the Decision enters into force on its

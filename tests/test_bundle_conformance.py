@@ -50,6 +50,7 @@ EXPECTED: dict[str, set[str]] = {
             "weather-change",
         )
     },
+    "Regulation": {"regulations/easa-open", "regulations/easa-specific-sora"},
 }
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)

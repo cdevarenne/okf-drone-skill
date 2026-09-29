@@ -14,7 +14,8 @@ generated:
 
 - Monitor ADS-B, if the UA has it.
 - VOs scan the airspace.
-- Operate below the open-category height limit. See [ARC](../risk/arc.md).
+- Operate below the open-category height limit.
+  See [Open category](../regulations/easa-open.md) and [ARC](../risk/arc.md).
 
 # Residual risk
 
