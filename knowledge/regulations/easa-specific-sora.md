@@ -1,7 +1,7 @@
 ---
 type: Regulation
 title: EASA 'specific' category and SORA 2.5
-description: Outside the 'open' category, an operation needs an authorisation and a SORA 2.5 risk assessment.
+description: Outside the 'open' category, an operation needs an authorisation and a SORA assessment.
 tags: [easa, specific-category, sora, risk-assessment, operational-authorisation]
 checks: [sora.applicable]
 table:
