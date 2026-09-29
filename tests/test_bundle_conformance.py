@@ -32,6 +32,9 @@ EXPECTED: dict[str, set[str]] = {
     "MAVLink Command": {
         f"mavlink/{c}" for c in ("nav-takeoff", "nav-waypoint", "nav-rtl", "nav-land")
     },
+    "Failsafe": {
+        f"failsafes/{f}" for f in ("lost-link", "low-battery", "geofence-breach", "gps-loss")
+    },
 }
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)
@@ -110,3 +113,10 @@ def test_mavlink_commands_have_an_id_and_seven_params() -> None:
         table = BUNDLE.concepts[cid].table
         assert table["mavlink_id"] == number, cid
         assert len(table["params"]) == 7, cid
+
+
+def test_failsafes_name_actions_and_px4_parameters() -> None:
+    for concept in BUNDLE.of_type("Failsafe"):
+        table = concept.table
+        assert table["actions"] and all(isinstance(a, str) for a in table["actions"]), concept.id
+        assert table["px4_params"] and all(p.isupper() for p in table["px4_params"]), concept.id
