@@ -187,7 +187,21 @@ A value that cannot be found is `"not_assessed"` and has a gap; the steps after 
 - **HOLD:** no fail, but at least one gap. A human must add knowledge or decide.
 
 The decision reads the checks in `validation.json` and in `risk.json`. `not_applicable` does
-not change it.
+not change it. No checks at all is HOLD: nothing was checked, so the tool cannot propose GO.
+
+### 5.6 Report and sign-off (`report.md`, `signoff.yaml`)
+
+- `report.md` has the sections of the flight-plan template: 1 mission overview, 2 operational
+  details, 3 airspace and regulatory compliance (the checks), 4 risk assessment (hazard matrix,
+  SORA summary), 5 flight profile and waypoint plan (items, declared failsafes), 6 decision,
+  7 audit trail (every cited concept with its `verified` entry and source; the pins), and
+  8 approvals. It has no time stamp: the same inputs give the same file.
+- The report shows aviation units with their metric values (500 ft AGL = 152.4 m).
+- `signoff.yaml`: `mission_id`, `proposed_decision`, `plan_sha256`, `report_sha256`, and
+  `approvals` with one entry per role (RPIC, mission supervisor, safety officer (optional)),
+  each with empty `name`, `decision` and `date`.
+- `render_report` never overwrites a `signoff.yaml` in which a person filled a field. It
+  stops with exit code 2, and the report stays as the person saw it.
 
 ## 6. Pipeline
 
@@ -214,6 +228,11 @@ not change it.
 
 ## 7. Seeded missions (`missions/SEEDED.yaml`)
 
+`missions/SEEDED.yaml` lists each seeded mission with `expected` (the decision), `cites` (the
+concepts that its failed checks must cite) and `gaps` (the check ids that must be gaps).
+`make seeded` runs all of them and writes `docs/data/seeded.json`; the README cites that file.
+The golden test runs them again and checks that `docs/data/seeded.json` is current.
+
 | Mission | Seeded condition | Expected |
 |---|---|---|
 | m01 | open category, VLOS, within all limits | GO |
@@ -226,7 +245,8 @@ not change it.
 
 - Conformance test: every concept parses, has `verified`, and each check id is unique.
 - Unit tests per script; the first test fails before the code exists.
-- Golden test: m01–m05 decisions and cited concept ids.
+- Golden test: m01–m05 decisions and cited concept ids; each seeded `mission.plan` validates
+  against the vendored subset schema; `docs/data/seeded.json` is current.
 - `make verify`: ruff, pytest, schema validation of every `mission.plan`.
 
 ## 9. Phases
