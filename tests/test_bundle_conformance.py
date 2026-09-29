@@ -21,7 +21,13 @@ TYPES = {
     "Reference",
 }
 # Concept ids per type. Each Phase 1 task adds its row before it adds the files.
-EXPECTED: dict[str, set[str]] = {}
+EXPECTED: dict[str, set[str]] = {
+    "Reference": {"platform/qgc-plan-format"},
+    "Mission Type": {
+        f"mission-types/{m}"
+        for m in ("mapping-survey", "infrastructure-inspection", "search-pattern")
+    },
+}
 BUNDLE = load_bundle(KNOWLEDGE)
 CONCEPTS = sorted(BUNDLE.concepts.values(), key=lambda c: c.id)
 
