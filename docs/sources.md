@@ -26,13 +26,13 @@ Downloaded by the owner on 2026-09-28 (local time). Kept outside the repo; not r
 | `SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf` | S4 | http://jarus-rpas.org/wp-content/uploads/2024/06/SORA-v2.5-Main-Body-Release-JAR_doc_25.pdf | 1344663 | `2471913e55c38999dc5ba0894ac696c3e4722ddb0956b1c62f15e6fbd9a1be1c` |
 
 The Decision itself (2 pages, not stored locally): https://www.easa.europa.eu/en/downloads/142510/en.
-Per that text (read by agent 2026-09-28, owner to confirm), the Decision enters into force on its
+Per that text (read by agent 2026-09-28, confirmed by cdevarenne 2026-09-29), the Decision enters into force on its
 publication in the EASA Official Publication.
 
 EASA SORA overview page (links to the SORA 2.5 package):
 https://www.easa.europa.eu/en/domains/drones-air-mobility/operating-drone/specific-category-civil-drones/specific-operations-risk-assessment-sora#group-easa-downloads
 
-## Findings to confirm when reading S4
+## Findings checked in S4
 
 These come from a secondary source (https://eudroneport.com/blog/sora-2-5-european-uas-operations/).
 
@@ -40,14 +40,17 @@ These come from a secondary source (https://eudroneport.com/blog/sora-2-5-europe
 2. Intrinsic GRC uses population density and a critical-area calculation (Annex F).
 3. Containment has low, medium and high levels.
 
-Checked 2026-09-28 in S4 (agent, text extraction and page images). The owner confirms.
+Findings 1 to 3: confirmed in S4 by cdevarenne 2026-09-29.
+
+Checked 2026-09-28 in S4 (agent, text extraction and page images). Confirmed by cdevarenne
+2026-09-29.
 
 - M3: S4 change log (edition 2.5) says "Removal of ERP as a mitigation". S4 Table 5 lists only
   M1(A), M1(B), M1(C) and M2. S2 OSO #08 names the ERP as Criterion #4.
 - SAIL: S4 §4.7, Table 7 (p. 47): final GRC x residual ARC -> SAIL I to VI; final GRC > 7 is
   Category C (certified).
 - Containment: S4 §4.8, Tables 8 to 13 (pp. 49-51), by UA size, SAIL, adjacent-area population
-  and outdoor assemblies. Table 8 rows read "IV - VI" and "V-VI"; confirm on the page.
+  and outdoor assemblies. Table 8 rows read "IV - VI" and "V-VI"; confirmed on the page.
 - OSOs: S4 §4.9.3, Table 14 (p. 54): 17 OSOs (#01-#09, #13, #16-#20, #23, #24).
 - S2 and S4 differ: OSO #04 is L/M/H for SAIL IV/V/VI in S4 and M/H/H in S2 (p. 44). The
   dependency columns also differ. The bundle uses S2 values and cites S4 as origin.
@@ -55,7 +58,7 @@ Checked 2026-09-28 in S4 (agent, text extraction and page images). The owner con
 Population density bands: found 2026-09-28 in S2 (AMC Issue 1, Amendment 3, Table 1 and
 Table 2, pages 23-25) and S4 (Table 2 and Table 3, pages 34-36). The iGRC values are the same in
 both. Bands: controlled ground area, < 5, < 50, < 500, < 5 000, < 50 000, > 50 000 people/km2.
-The owner confirms.
+Confirmed by cdevarenne 2026-09-29.
 
 Resolved 2026-09-28: the corrigendum to ED Decision 2025/018/R (12 December 2025, 1 page) only
 renames the annex. "AMC and GM to Reg. (EU) 2019/947 — Issue 1, Amendment 3" becomes
