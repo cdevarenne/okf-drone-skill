@@ -20,7 +20,7 @@ No flight controller, no live NOTAM or weather feeds, no simulation in v1.
 | 2 | `gen_plan`: mission request to QGroundControl `.plan` | Done |
 | 3 | `validate_plan`, `score_risk` | Done |
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
-| 5 | Screenshots, "How this was built" | Planned |
+| 5 | Screenshots, examples, "How this was built" | Done |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
 
@@ -67,6 +67,21 @@ Five missions in [`missions/`](missions/) test the decision rule (spec §7):
 concepts to [`docs/data/seeded.json`](docs/data/seeded.json). The golden test fails if that file
 is not current.
 
+## Examples
+
+[`examples/`](examples/) has the five output files of each seeded mission, as `make examples`
+writes them: `mission.plan`, `validation.json`, `risk.json`, `report.md` and `signoff.yaml`
+(with empty approval fields). Start with
+[`examples/m02-altitude-over-limit/report.md`](examples/m02-altitude-over-limit/report.md).
+A test fails if `examples/` is not the current output.
+
+![m01 in QGroundControl](docs/screenshots/qgc-m01-survey-open.png)
+
+*The m01 plan (`examples/m01-survey-open/mission.plan`) in QGroundControl: takeoff at home,
+the grid inside the area, return to launch, and the inclusion geofence. The coordinates are
+arbitrary test values. The population density is declared, not looked up, so the GO applies to
+the declared inputs only.*
+
 ## Knowledge bundle
 
 | Folder | Content | Sources |
@@ -82,6 +97,12 @@ is not current.
 Where the EASA text (S2) and the JARUS text (S4) differ, the bundle uses the EASA text. The
 differences are listed in [`docs/sources.md`](docs/sources.md).
 
+![OKF knowledge graph](docs/screenshots/knowledge-graph.png)
+
+*The bundle rendered by the OKF reference visualizer (`make render`). Each node is one concept
+file and each edge is a markdown link (`log` is the bundle's change log, not a concept). It is
+a browsing aid; the pipeline reads the same files directly.*
+
 ## Quick start
 
 Needs Python 3.14 and [uv](https://docs.astral.sh/uv/).
@@ -92,25 +113,59 @@ make verify      # ruff and pytest
 make render      # OKF visualizer HTML of knowledge/ in out/knowledge-viz.html
 make plan MISSION=missions/m01-survey-open.yaml  # writes the five files in out/m01-survey-open/
 make seeded      # runs m01 to m05; writes docs/data/seeded.json
+make examples    # writes examples/ and docs/data/seeded.json
 ```
 
 ## How this was built
 
-Built with an AI coding agent (Claude Code) under a written process. The record is in the repo.
+Built with an AI coding agent (Claude Code) under a written process. The record is in the repo:
+the spec, one plan per phase, and one tracking issue and one commit per task.
 
 - **Spec, then plan, then tasks.** The spec is in [`docs/specs/`](docs/specs/). Each phase has
   a plan in [`docs/plans/`](docs/plans/) with the complete code and the expected test output.
-  Each task has a tracking issue and one commit. The test fails first.
-- **Plans are prototyped first.** The Phase 1 loader, tests and SORA tables were run in a
-  scratch copy before they went into the plan. Executing the plan still found one plan error (a
-  folder index cut one line short); it was fixed in the plan and in the bundle.
+  The owner approved each plan before its first task. Each task has a tracking issue and one
+  commit. The test fails first.
+- **Plans are prototyped first.** The code of each plan was run in a scratch copy, then the
+  tasks were replayed in order on a fresh copy of `main`. The expected outputs in the plans
+  come from that replay.
+- **Bugs found before they reached `main`.** Prototyping found: a traceback for a missing
+  mission file (Phase 2); a lost second line in wrapped hazard mitigations (Phase 3); a GO
+  decision when no check ran, now HOLD (Phase 4). Executing the plans found one plan error: a
+  folder index cut one line short (Phase 1), fixed in the plan and in the bundle.
 - **Sources before values.** No regulatory value was written from memory. Each one was read in
   a source document that the owner had read and marked `read`. The local copies are checked by
   SHA-256. Reading the source corrected one assumption (the 120 m limit is Article 4(1)(e) of
-  Reg. (EU) 2019/947, not 4(1)(d)).
-- - **Human gates.** The owner read the sources (Phase 0), verified every concept (Phase 1), and
-  reviewed the reports of the seeded missions m01 to m05 (Phase 4) before the next phase. The
-  tool only proposes a decision; in the Phase 4 review, the owner filled `signoff.yaml` by hand.
+  Reg. (EU) 2019/947, not 4(1)(d)). When a source site blocked automated download, the owner
+  supplied the document.
+- **Units.** All inputs and outputs are metric. Where the source uses aviation units (500 ft
+  AGL, FL600), the bundle keeps them and gives the metric value next to them.
+- **Human gates.** The owner read the sources (Phase 0), verified every concept (Phase 1), and
+  reviewed the reports of the seeded missions m01 to m05 (Phase 4) before the next phase. A
+  concept that changed after its review was verified again (`risk/arc`, units). The owner
+  loaded a generated plan in QGroundControl (Phase 2). The tool only proposes a decision; in
+  the Phase 4 review, the owner filled `signoff.yaml` by hand.
+- **Generated, never typed.** `docs/data/seeded.json` and `examples/` are written by `make`;
+  tests fail if they are not current.
+
+## Limits (v1)
+
+- Airspace, NOTAM, TFR, weather and terrain are declared inputs. There is no live data.
+- The height check runs only on flat terrain; with varied terrain it is a gap.
+- The SORA OSO table is not in the bundle, so every specific-category mission is HOLD.
+- The SORA mitigation levels and the adjacent-area limits are the operator's claims; the Annex
+  B and Annex E criteria are not checked. The contingency volume and the ground risk buffer are
+  not modelled.
+- Multicopters only; convex areas; three patterns (grid, corridor, expanding square);
+  `SimpleItem` mission items only.
+- EU rules only: no FAA Part 107, no national additions (for example DGAC).
+- No simulation and no LLM step.
+
+## What's next
+
+- DRN-09: optional LLM steps that the owner runs, outside `make plan`.
+- DRN-10: fly the generated plans in PX4 SITL.
+- The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
+- Terrain data, so that the height check can run on varied terrain.
 
 ## Pins
 
@@ -129,6 +184,8 @@ tests/fixtures/missions/      fixture mission requests (one per mission type)
 docs/specs/, docs/plans/      spec and phase plans
 docs/sources.md               source register
 docs/data/                    generated results (make seeded)
+examples/                     generated output of m01 to m05 (make examples)
+docs/screenshots/             README images
 ```
 
 ## License
