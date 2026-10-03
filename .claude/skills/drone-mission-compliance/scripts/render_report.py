@@ -77,7 +77,7 @@ def render(
 ) -> str:
     """Return report.md. The text has no time stamp, so the same inputs give the same file.
 
-    `narrative` is a checked summary from narrate (DRN-09); without it the report is the v1 report.
+    `narrative` has the checked explanations from narrate (DRN-09); without it, the v1 report.
     """
     m = mission
     out: list[str] = []
@@ -251,9 +251,7 @@ def render(
     add("## 6. Decision")
     add("")
     if narrative:
-        add("### Summary (model-written, checked)")
-        add("")
-        add(narrative["summary"])
+        add("### Explanations (model-written, checked)")
         add("")
         for item in narrative["items"]:
             add(f"- `{item['check_id']}`: {item['explanation']}")

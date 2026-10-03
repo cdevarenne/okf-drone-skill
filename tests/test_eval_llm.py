@@ -4,12 +4,9 @@ import json
 from pathlib import Path
 
 import intake
-import narrate
 import pytest
-from bundle_helpers import BUNDLE
 from eval_llm import label_for, main, score_intake
 from mission import load_mission
-from pipeline import run_mission
 
 ROOT = Path(__file__).resolve().parents[1]
 LABEL = load_mission(ROOT / "missions" / "m01-survey-open.yaml")
@@ -63,18 +60,6 @@ def small_set(tmp_path: Path, monkeypatch) -> list[str]:
     _record(fixtures, intake.request(text), {"fields": fields})
     seeded = tmp_path / "SEEDED.yaml"
     seeded.write_text("- mission: m01-survey-open\n  expected: GO\n")
-    out = tmp_path / "plan"
-    run_mission(
-        ROOT / "missions" / "m01-survey-open.yaml", ROOT / "knowledge", ROOT / "tools.lock", out
-    )
-    folder = out / "m01-survey-open"
-    doc = narrate.inputs(
-        LABEL,
-        json.loads((folder / "validation.json").read_text()),
-        json.loads((folder / "risk.json").read_text()),
-        BUNDLE,
-    )
-    _record(fixtures, narrate.request(doc), {"summary": "The tool proposes GO.", "items": []})
     return [
         "--texts", str(texts), "--seeded", str(seeded), "--missions", str(ROOT / "missions"),
         "--knowledge", str(ROOT / "knowledge"), "--lock", str(ROOT / "tools.lock"),
@@ -86,9 +71,9 @@ def test_full_run_on_recorded_answers(small_set: list[str], tmp_path: Path) -> N
     assert main(small_set) == 0
     result = json.loads((tmp_path / "eval.json").read_text())["models"]["claude-opus-5-5"]
     assert result["intake"]["m01"]["correct"] == 2 and result["intake"]["m01"]["wrong"] == []
-    assert result["narrate"]["m01-survey-open"] == {"accepted": True, "reasons": []}
-    # Two answers, each 1000 tokens in (4 USD/M) and 500 out (20 USD/M).
-    assert result["cost_usd"] == pytest.approx(2 * 0.014)
+    assert result["narrate"]["m01-survey-open"] == {"skipped": "no fail and no gap"}
+    # One answer (intake; m01 is GO, so no narrate call): 1000 tokens in (4 USD/M), 500 out (20 USD/M).
+    assert result["cost_usd"] == pytest.approx(0.014)
 
 
 def test_missing_answer_names_the_text(small_set: list[str], tmp_path: Path, capsys) -> None:

@@ -17,15 +17,17 @@ pipeline. It never makes a check, a score or a decision.
 
 - **Intake:** a mission description in plain text becomes a draft mission request. A person
   completes and reviews the draft. Then `make plan` uses it.
-- **Narrate:** the results of a `make plan` run become a short summary for the person who
-  signs. The summary restates the results. It does not change them.
+- **Narrate:** for each check that fails or is a gap, a one-sentence explanation for the person
+  who signs. The explanations restate the results. They do not change them, and they do not
+  state a decision (the owner dropped the free-text summary on 2026-10-02, §5.2 limit).
 
 **Done when:**
 
 1. `make intake TEXT=missions/text/<id>.txt` writes `out/<id>/mission.draft.yaml` and
    `out/<id>/intake.json`. It never writes in `missions/`.
 2. `make narrate MISSION=missions/<id>.yaml` (after `make plan`) writes
-   `out/<id>/narrative.json` and writes `report.md` and `signoff.yaml` again with the summary.
+   `out/<id>/narrative.json` and writes `report.md` and `signoff.yaml` again with the
+   explanations. A mission with no fail and no gap has nothing to explain: no call is made.
 3. Each LLM answer goes through a deterministic validator. A rejected answer gives no output
    from the step, and the step prints each reason.
 4. Each paid call is in the usage ledger `out/llm-usage.jsonl`. No call starts if its worst
@@ -120,43 +122,42 @@ person who copies the draft to `missions/` declares its values.
 
 ### 5.1 Input and output
 
-- Input: the mission request, `out/<id>/validation.json`, `risk.json`, the proposed decision
-  (from `decide`), and the title of each cited concept. "The input files" in §5.2 means
-  these inputs.
-- The LLM answer (structured output): `{summary, items}`. `summary` has 1 to 3 sentences.
-  `items` has one `{check_id, explanation}` for each check with the status `fail` or `gap`,
-  and no other.
-- Output: `out/<id>/narrative.json`: `{inputs_sha256, model, summary, items}`.
-  `inputs_sha256` is the sha256 of `validation.json` and `risk.json`.
-- `render_report` adds the section "Summary (model-written, checked)" when `narrative.json`
-  exists and its `inputs_sha256` is current. Otherwise the report is the v1 report.
-  `signoff.yaml` gets the sha256 of the new report. If a person started the sign-off,
-  `render_report` stops (v1 rule), and narrate changes nothing.
+- Input: the mission request, `out/<id>/validation.json`, `risk.json`, and the title of each
+  cited concept. Not the proposed decision: an explanation does not state one. "The input
+  files" in §5.2 means these inputs.
+- The LLM answer (structured output): `{items}`, one `{check_id, explanation}` for each check
+  with the status `fail` or `gap`, and no other. There is no free-text summary.
+- Output: `out/<id>/narrative.json`: `{inputs_sha256, model, items}`. `inputs_sha256` is the
+  sha256 of `validation.json` and `risk.json`.
+- `render_report` adds "Explanations (model-written, checked)" at the start of section 6 when
+  `narrative.json` exists and its `inputs_sha256` is current. Otherwise the report is the v1
+  report. `signoff.yaml` gets the sha256 of the new report. If a person started the sign-off,
+  narrate stops before the call, and changes nothing.
 
 ### 5.2 Validator (whole answer)
 
 The answer is accepted only if all these rules are true. One error rejects the whole answer.
 
-1. `items` has exactly the check ids that have the status `fail` or `gap`.
-2. The summary contains the proposed decision word (`GO`, `NO-GO` or `HOLD`), and no other
-   decision word.
-3. The text does not contain an approval word: "approved", "cleared", "safe to fly",
-   "compliant" (the list is in the code, from the template `claims.py` approach).
-4. Each number in the text is in the input files.
-5. Each concept id in the text is in the input files.
-
-Added during the build (security review, 2026-10-02), so that the text cannot hide a word from
-the checks:
-
-6. A decision word in any case (go, no-go, hold) is the exact proposed decision in capitals.
-7. Each text is one line of printable ASCII: no line break (a heading or a table), no link,
+1. `items` has exactly the check ids that have the status `fail` or `gap`, each once.
+2. The text has no decision word, in any case (go, no-go, hold). The report states the
+   decision from the deterministic rule.
+3. The text has no approval word or synonym (approved, authorized, cleared, permitted,
+   allowed, acceptable, safe, compliant; the list is in the code).
+4. Each number in the text is in the input files, and numbers are digits.
+5. Each concept id in the text is in the input files (exact match).
+6. Each text is one line of printable ASCII: no line break (a heading or a table), no link,
    URL or HTML, and no lookalike or invisible character.
-8. Numbers are digits; a number in words rejects the answer.
+
+Rules 2 to 6 are stricter than the first version of this spec. A security review of the build
+(2026-10-02) found lowercase decision words, approval synonyms, lookalike letters and number
+words that got past the first rules.
 
 **Limit.** These rules are word checks. They cannot catch a paraphrase that suggests approval
-(for example "the mission may fly"). The controls for this are the report layout and the
-person: the proposed decision of the deterministic rule is on the first lines of the report,
-the summary has the heading "Summary (model-written, checked)", and a person reads and signs.
+(for example "the mission may fly once the fence is moved"). For this reason the owner dropped
+the free-text summary: each explanation is one sentence about one failed or missing check.
+The other controls are the report layout and the person: the proposed decision of the
+deterministic rule is on the first lines of the report, the explanations have the heading
+"Explanations (model-written, checked)", and a person reads and signs.
 
 ## 6. LLM interface (`llm.py`)
 
@@ -191,7 +192,8 @@ A copy of the template `llm.py`, reduced to what this spec uses:
   a validator defect. x02 must leave every failsafe empty (rule 4 makes this a property of
   the validator). For x01 the eval reports which failsafes the model filled. This measures
   the model; the validator cannot block it (§4.2 limit).
-- **Narrate metrics:** for m01 to m05, accepted or rejected, and the reasons.
+- **Narrate metrics:** for m02 to m05 (m01 is GO: nothing to explain), accepted or rejected,
+  and the reasons.
 - **Cost:** the sum of `cost_usd` from the ledger, per step and model.
 - **Models:** the default model, and each other model that the owner selects with
   `LLM_MODEL`.
@@ -216,7 +218,7 @@ A copy of the template `llm.py`, reduced to what this spec uses:
 3. Intake keeps a field only with a supporting quote, and drops a field that needs a
    calculation, a unit conversion, or a guess. Each field is accepted or dropped by itself.
 4. Narrate is accepted or rejected as a whole, as in the template. A rejected narrative
-   leaves the v1 report.
+   leaves the v1 report. No free-text summary (owner, 2026-10-02).
 5. Default model `claude-opus-5-5` at effort `low`, pinned in `tools.lock`. The eval measures
    the other models. The owner selects the default from the eval results.
 6. Default budget `LLM_BUDGET_USD=0.50` per run. Default mode `replay`.

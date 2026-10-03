@@ -92,6 +92,9 @@ def eval_model(llm: LLM, args: argparse.Namespace) -> Json:
                 json.loads((folder / "risk.json").read_text(encoding="utf-8")),
                 bundle,
             )
+            if not narrate.to_explain(doc):
+                narrate_results[entry["mission"]] = {"skipped": "no fail and no gap"}
+                continue
             req = narrate.request(doc)
             try:
                 answer = llm.complete(req)
