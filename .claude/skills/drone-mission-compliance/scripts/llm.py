@@ -165,19 +165,24 @@ class LLM:
         return self.client
 
     def _call_api(self, request: Request) -> tuple[Json, Json]:
-        message = self._client().messages.create(
-            model=self.model,
-            max_tokens=request.max_tokens,
-            system=[
-                {"type": "text", "text": request.system, "cache_control": {"type": "ephemeral"}}
-            ],
-            messages=[{"role": "user", "content": request.user}],
-            output_config={
-                "format": {"type": "json_schema", "schema": request.schema},
-                **MODEL_CONFIG.get(self.model, {}),
-            },
-            timeout=REQUEST_TIMEOUT_S,
-        )
+        try:
+            message = self._client().messages.create(
+                model=self.model,
+                max_tokens=request.max_tokens,
+                system=[
+                    {"type": "text", "text": request.system, "cache_control": {"type": "ephemeral"}}
+                ],
+                messages=[{"role": "user", "content": request.user}],
+                output_config={
+                    "format": {"type": "json_schema", "schema": request.schema},
+                    **MODEL_CONFIG.get(self.model, {}),
+                },
+                timeout=REQUEST_TIMEOUT_S,
+            )
+        # The SDK boundary: no credentials (TypeError), network and API errors, after the SDK's
+        # own retries. Each one stops the step with one message, as a missing answer does.
+        except Exception as e:
+            raise LLMError(f"{request.task}: the API call failed: {e}") from e
         if message.stop_reason != "end_turn":
             raise LLMError(f"{request.task}: stop_reason {message.stop_reason!r}; answer rejected")
         try:

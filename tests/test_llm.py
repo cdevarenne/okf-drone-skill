@@ -161,3 +161,18 @@ def test_module_imports_without_anthropic() -> None:
         [sys.executable, "-c", code], cwd=SCRIPTS, capture_output=True, text=True, check=True
     )
     assert out.stdout.strip() == "False"
+
+
+def test_sdk_failure_is_an_llm_error(tmp_path: Path) -> None:
+    """A failed paid call (no credentials, network, API error) stops the step with one message."""
+
+    class Failing(FakeClient):
+        def _create(self, **params):
+            raise TypeError("Could not resolve authentication method.")
+
+    client = Failing()
+    client.messages = SimpleNamespace(create=client._create)
+    llm = make(tmp_path, "anthropic", client)
+    with pytest.raises(LLMError, match="narrate: the API call failed: .*authentication"):
+        llm.complete(REQUEST)
+    assert not llm.cache.exists() and not llm.ledger.exists()
