@@ -171,6 +171,12 @@ class _Sora:
             self.checks.append(no_concept(cid))
             return None
         facts = self.m["airspace"]
+        limit = c.table["above_500ft_agl_m"]
+        if self.m["max_altitude_agl_m"] > limit and facts.get("above_500ft_agl") is False:
+            ev = f"max_altitude_agl_m {self.m['max_altitude_agl_m']}; above_500ft_agl false"
+            msg = f"the mission flies above 500 ft AGL ({limit} m) but declares it does not"
+            self._add("initial_arc", NOT_ASSESSED, result(c, cid, FAIL, ev, msg))
+            return None
         for rule in c.table["initial_arc"]:
             match = True
             for key, want in rule["when"].items():

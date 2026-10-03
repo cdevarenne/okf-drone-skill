@@ -166,3 +166,18 @@ def test_cli_writes_risk_json(tmp_path: Path) -> None:
     assert main([*args, "--out", str(tmp_path)]) == 0
     doc = json.loads((tmp_path / "specific" / "risk.json").read_text())
     assert doc == score(load_mission(MISSIONS / "specific.yaml"), BUNDLE)
+
+
+def test_above_500ft_declared_false_fails() -> None:
+    """Review 2026-10-02: 180 m with above_500ft_agl false gave ARC-b and SAIL II."""
+    summary, checks = sora(specific(max_altitude_agl_m=180, airspace__above_500ft_agl=False))
+    assert checks["sora.initial_arc"]["status"] == "fail"
+    assert "152.4" in checks["sora.initial_arc"]["message"]
+    assert summary["sail"]["value"] == "not_assessed"
+
+
+def test_below_500ft_declared_true_is_valid() -> None:
+    """The operational volume can go above 152.4 m when the planned altitude is below it."""
+    summary, checks = sora(specific(max_altitude_agl_m=100, airspace__above_500ft_agl=True))
+    assert checks["sora.initial_arc"]["status"] == "pass"
+    assert summary["initial_arc"]["value"] == "c"

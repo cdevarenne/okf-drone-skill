@@ -22,12 +22,15 @@ table:
     vlos_applies_to: [VLOS, BVLOS-with-airspace-observers]
     lowest_by_vlos: b
   tmpr: {a: none, b: low, c: medium, d: high}
+  above_500ft_agl_m: 152.4
 generated:
   by: claude-code
-  at: "2026-09-28T20:11:00-07:00"
+  at: "2026-10-02T18:33:24-07:00"
 verified:
   - by: "human:cdevarenne"
     at: "2026-09-28T21:41:00-07:00"
+  - by: "human:cdevarenne"
+    at: "2026-10-02T18:37:00-07:00"
 ---
 # Rule
 
@@ -46,7 +49,11 @@ The source gives these limits in aviation units, as on aeronautical charts. The 
   a height above ground.
 
 The operator declares `above_500ft_agl` and `above_fl600` as true or false for the operational
-volume. The code does no unit conversion.
+volume. The code does no unit conversion. `above_500ft_agl_m` is the metric value of 500 ft
+AGL. The code compares the mission `max_altitude_agl_m` with it in one direction only: a
+mission that flies above it and declares `above_500ft_agl: false` fails `sora.initial_arc`.
+The other direction is valid, because the operational volume (for example its contingency
+volume) can go above 500 ft AGL when the planned altitude does not.
 
 For VLOS operations, and for BVLOS operations with airspace observers, the initial ARC can be
 reduced by one class. This reduction cannot give ARC-a. Other strategic mitigations (Annex C)
