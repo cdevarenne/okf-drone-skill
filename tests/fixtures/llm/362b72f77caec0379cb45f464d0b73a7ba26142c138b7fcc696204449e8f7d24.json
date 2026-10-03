@@ -1,0 +1,18 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "plan.inside_geofence",
+        "explanation": "The flight path leaves the geofence at items 3, 4, 7, 8, 11, 12, 15 and multiple legs between them."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 1854,
+    "output_tokens": 64
+  }
+}

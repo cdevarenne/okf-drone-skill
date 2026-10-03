@@ -1,0 +1,18 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "sora.oso",
+        "explanation": "The OSO (Operational Safety Objectives) assessment could not be completed because no verified concept in the bundle governs this check."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 2558,
+    "output_tokens": 52
+  }
+}

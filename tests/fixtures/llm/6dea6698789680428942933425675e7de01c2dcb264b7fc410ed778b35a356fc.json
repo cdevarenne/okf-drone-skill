@@ -1,0 +1,158 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "fields": [
+      {
+        "path": "mission_type",
+        "quote": "Mapping survey",
+        "value": "mapping-survey"
+      },
+      {
+        "path": "category",
+        "quote": "open category",
+        "value": "open"
+      },
+      {
+        "path": "operation",
+        "quote": "visual line of sight (VLOS)",
+        "value": "VLOS"
+      },
+      {
+        "path": "home.lat",
+        "quote": "44.7990",
+        "value": 44.799
+      },
+      {
+        "path": "home.lon",
+        "quote": "-0.6000",
+        "value": -0.6
+      },
+      {
+        "path": "home.amsl_m",
+        "quote": "50 m above sea level",
+        "value": 50
+      },
+      {
+        "path": "terrain",
+        "quote": "flat",
+        "value": "flat"
+      },
+      {
+        "path": "area.polygon",
+        "quote": "44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985",
+        "value": [
+          [
+            44.7985,
+            -0.6015
+          ],
+          [
+            44.8025,
+            -0.6015
+          ],
+          [
+            44.8025,
+            -0.5985
+          ],
+          [
+            44.7985,
+            -0.5985
+          ]
+        ]
+      },
+      {
+        "path": "geofence.polygon",
+        "quote": "44.7980, -0.6020; 44.8030, -0.6020; 44.8030, -0.5980; 44.7980, -0.5980",
+        "value": [
+          [
+            44.798,
+            -0.602
+          ],
+          [
+            44.803,
+            -0.602
+          ],
+          [
+            44.803,
+            -0.598
+          ],
+          [
+            44.798,
+            -0.598
+          ]
+        ]
+      },
+      {
+        "path": "max_altitude_agl_m",
+        "quote": "100 m above ground",
+        "value": 100
+      },
+      {
+        "path": "speed_ms",
+        "quote": "8 m/s",
+        "value": 8
+      },
+      {
+        "path": "pattern.spacing_m",
+        "quote": "40 m apart",
+        "value": 40
+      },
+      {
+        "path": "ua.mtom_kg",
+        "quote": "0.9 kg",
+        "value": 0.9
+      },
+      {
+        "path": "ua.char_dimension_m",
+        "quote": "0.35 m",
+        "value": 0.35
+      },
+      {
+        "path": "ua.max_speed_ms",
+        "quote": "15 m/s",
+        "value": 15
+      },
+      {
+        "path": "ground.population_density",
+        "quote": "sparsely populated",
+        "value": "sparsely-populated"
+      },
+      {
+        "path": "airspace.class",
+        "quote": "class G",
+        "value": "G"
+      },
+      {
+        "path": "airspace.declared_by",
+        "quote": "declared by the operator",
+        "value": "operator"
+      },
+      {
+        "path": "failsafes.lost_link",
+        "quote": "return to launch",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.low_battery",
+        "quote": "return to launch",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.critical_battery",
+        "quote": "land",
+        "value": "LAND"
+      },
+      {
+        "path": "failsafes.geofence_breach",
+        "quote": "return to launch",
+        "value": "RTL"
+      }
+    ]
+  },
+  "task": "intake",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 2688,
+    "output_tokens": 773
+  }
+}

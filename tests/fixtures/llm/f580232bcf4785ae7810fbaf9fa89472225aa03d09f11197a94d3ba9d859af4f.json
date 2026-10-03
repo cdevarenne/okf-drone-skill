@@ -1,0 +1,18 @@
+{
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "plan.inside_geofence",
+        "explanation": "The flight path leaves the geofence: items 3, 4, 7, 8, 11, 12 and 15 are outside it, and legs 2-3, 3-4, 4-5, 6-7, 7-8, 8-9, 10-11, 11-12, 12-13, 14-15 and 15-home are outside it (15 items, 15 legs)."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 569,
+    "input_tokens": 1758,
+    "output_tokens": 146
+  }
+}

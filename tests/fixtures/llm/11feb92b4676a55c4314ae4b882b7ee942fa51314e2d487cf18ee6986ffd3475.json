@@ -1,0 +1,124 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "fields": [
+      {
+        "path": "mission_type",
+        "quote": "Search pattern for a lost hiker",
+        "value": "search-pattern"
+      },
+      {
+        "path": "category",
+        "quote": "open category",
+        "value": "open"
+      },
+      {
+        "path": "operation",
+        "quote": "visual line of sight (VLOS)",
+        "value": "VLOS"
+      },
+      {
+        "path": "home.lat",
+        "quote": "44.7990",
+        "value": 44.799
+      },
+      {
+        "path": "home.lon",
+        "quote": "-0.6000",
+        "value": -0.6
+      },
+      {
+        "path": "home.amsl_m",
+        "quote": "50 m above sea level",
+        "value": 50
+      },
+      {
+        "path": "terrain",
+        "quote": "terrain is flat",
+        "value": "flat"
+      },
+      {
+        "path": "area",
+        "quote": "polygon 44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985",
+        "value": "{\"polygon\":[[44.7985,-0.6015],[44.8025,-0.6015],[44.8025,-0.5985],[44.7985,-0.5985]]}"
+      },
+      {
+        "path": "geofence",
+        "quote": "polygon 44.7980, -0.6020; 44.8005, -0.6020; 44.8005, -0.5980; 44.7980, -0.5980",
+        "value": "{\"polygon\":[[44.7980,-0.6020],[44.8005,-0.6020],[44.8005,-0.5980],[44.7980,-0.5980]]}"
+      },
+      {
+        "path": "max_altitude_agl_m",
+        "quote": "60 m above ground",
+        "value": 60
+      },
+      {
+        "path": "speed_ms",
+        "quote": "8 m/s",
+        "value": 8
+      },
+      {
+        "path": "pattern",
+        "quote": "datum 44.8005, -0.6000, and the legs are 30 m apart",
+        "value": "{\"datum\":[44.8005,-0.6000],\"spacing_m\":30}"
+      },
+      {
+        "path": "ua.mtom_kg",
+        "quote": "weighs 0.9 kg",
+        "value": 0.9
+      },
+      {
+        "path": "ua.char_dimension_m",
+        "quote": "0.35 m across",
+        "value": 0.35
+      },
+      {
+        "path": "ua.max_speed_ms",
+        "quote": "top speed of 15 m/s",
+        "value": 15
+      },
+      {
+        "path": "ground.population_density",
+        "quote": "sparsely populated",
+        "value": "sparsely-populated"
+      },
+      {
+        "path": "airspace.class",
+        "quote": "airspace is class G",
+        "value": "G"
+      },
+      {
+        "path": "airspace.declared_by",
+        "quote": "as declared by the operator",
+        "value": "operator"
+      },
+      {
+        "path": "failsafes.lost_link",
+        "quote": "On lost link the drone does a return to launch",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.low_battery",
+        "quote": "On low battery it does a return to launch",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.critical_battery",
+        "quote": "On critical battery it must land",
+        "value": "LAND"
+      },
+      {
+        "path": "failsafes.geofence_breach",
+        "quote": "On a geofence breach it does a return to launch",
+        "value": "RTL"
+      }
+    ]
+  },
+  "task": "intake",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 2707,
+    "output_tokens": 725
+  }
+}

@@ -1,0 +1,99 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "fields": [
+      {
+        "path": "mission_type",
+        "quote": "Mapping survey",
+        "value": "mapping-survey"
+      },
+      {
+        "path": "category",
+        "quote": "open category",
+        "value": "open"
+      },
+      {
+        "path": "operation",
+        "quote": "visual line of sight (VLOS)",
+        "value": "VLOS"
+      },
+      {
+        "path": "home",
+        "quote": "Home is at 44.7990, -0.6000, at 50 m above sea level",
+        "value": "{\"lat\":44.7990,\"lon\":-0.6000,\"amsl_m\":50}"
+      },
+      {
+        "path": "terrain",
+        "quote": "terrain is flat",
+        "value": "flat"
+      },
+      {
+        "path": "area",
+        "quote": "work area is the polygon 44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985",
+        "value": "{\"polygon\":[[44.7985,-0.6015],[44.8025,-0.6015],[44.8025,-0.5985],[44.7985,-0.5985]]}"
+      },
+      {
+        "path": "geofence",
+        "quote": "geofence is the polygon 44.7980, -0.6020; 44.8030, -0.6020; 44.8030, -0.5980; 44.7980, -0.5980",
+        "value": "{\"polygon\":[[44.7980,-0.6020],[44.8030,-0.6020],[44.8030,-0.5980],[44.7980,-0.5980]]}"
+      },
+      {
+        "path": "max_altitude_agl_m",
+        "quote": "flight is at 100 m above ground",
+        "value": 100
+      },
+      {
+        "path": "speed_ms",
+        "quote": "at 8 m/s",
+        "value": 8
+      },
+      {
+        "path": "pattern",
+        "quote": "survey lines are 40 m apart",
+        "value": "{\"spacing_m\":40}"
+      },
+      {
+        "path": "ua",
+        "quote": "drone weighs 0.9 kg, is 0.35 m across, and has a top speed of 15 m/s",
+        "value": "{\"mtom_kg\":0.9,\"char_dimension_m\":0.35,\"max_speed_ms\":15}"
+      },
+      {
+        "path": "ground.population_density",
+        "quote": "ground below is sparsely populated",
+        "value": "sparsely-populated"
+      },
+      {
+        "path": "airspace.class",
+        "quote": "airspace is class G",
+        "value": "G"
+      },
+      {
+        "path": "airspace.declared_by",
+        "quote": "declared by the operator",
+        "value": "operator"
+      },
+      {
+        "path": "failsafes.low_battery",
+        "quote": "low battery it does a return to launch",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.critical_battery",
+        "quote": "critical battery it must land",
+        "value": "LAND"
+      },
+      {
+        "path": "failsafes.geofence_breach",
+        "quote": "geofence breach it does a return to launch",
+        "value": "RTL"
+      }
+    ]
+  },
+  "task": "intake",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 2676,
+    "output_tokens": 662
+  }
+}

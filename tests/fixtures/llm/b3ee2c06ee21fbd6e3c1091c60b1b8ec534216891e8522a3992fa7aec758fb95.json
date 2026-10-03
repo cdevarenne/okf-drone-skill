@@ -1,0 +1,18 @@
+{
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "alt.max_agl",
+        "explanation": "The plan's highest item is 150 m above home on flat terrain, which is above the 120 m limit in regulations/easa-open."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 569,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 1708,
+    "output_tokens": 71
+  }
+}

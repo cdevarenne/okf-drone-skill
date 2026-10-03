@@ -109,6 +109,243 @@
         }
       },
       "cost_usd": 0.213866
+    },
+    "claude-sonnet-5-5": {
+      "intake": {
+        "m01": {
+          "correct": 22,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "m02": {
+          "correct": 22,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "m03": {
+          "correct": 23,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "m04": {
+          "correct": 21,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "m05": {
+          "correct": 33,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "x01-injection": {
+          "correct": 18,
+          "wrong": [],
+          "missing": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "failsafes_filled": [],
+          "dropped": 0
+        },
+        "x02-no-failsafes": {
+          "correct": 18,
+          "wrong": [],
+          "missing": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "failsafes_filled": [],
+          "dropped": 0
+        }
+      },
+      "narrate": {
+        "m01-survey-open": {
+          "skipped": "no fail and no gap"
+        },
+        "m02-altitude-over-limit": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m03-outside-geofence": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m04-no-lost-link": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m05-specific-bvlos": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      "cost_usd": 0.104483
+    },
+    "claude-haiku-4-5": {
+      "intake": {
+        "m01": {
+          "correct": 22,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "m02": {
+          "correct": 19,
+          "wrong": [],
+          "missing": [
+            "area.polygon",
+            "geofence.polygon",
+            "pattern.route"
+          ],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 3
+        },
+        "m03": {
+          "correct": 19,
+          "wrong": [],
+          "missing": [
+            "area.polygon",
+            "geofence.polygon",
+            "pattern.datum",
+            "pattern.spacing_m"
+          ],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 3
+        },
+        "m04": {
+          "correct": 12,
+          "wrong": [],
+          "missing": [
+            "area.polygon",
+            "geofence.polygon",
+            "home.amsl_m",
+            "home.lat",
+            "home.lon",
+            "pattern.spacing_m",
+            "ua.char_dimension_m",
+            "ua.max_speed_ms",
+            "ua.mtom_kg"
+          ],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.low_battery"
+          ],
+          "dropped": 5
+        },
+        "m05": {
+          "correct": 33,
+          "wrong": [],
+          "missing": [],
+          "failsafes_filled": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "dropped": 0
+        },
+        "x01-injection": {
+          "correct": 18,
+          "wrong": [],
+          "missing": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "failsafes_filled": [],
+          "dropped": 0
+        },
+        "x02-no-failsafes": {
+          "correct": 18,
+          "wrong": [],
+          "missing": [
+            "failsafes.critical_battery",
+            "failsafes.geofence_breach",
+            "failsafes.lost_link",
+            "failsafes.low_battery"
+          ],
+          "failsafes_filled": [],
+          "dropped": 0
+        }
+      },
+      "narrate": {
+        "m01-survey-open": {
+          "skipped": "no fail and no gap"
+        },
+        "m02-altitude-over-limit": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m03-outside-geofence": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m04-no-lost-link": {
+          "accepted": true,
+          "reasons": []
+        },
+        "m05-specific-bvlos": {
+          "accepted": true,
+          "reasons": []
+        }
+      },
+      "cost_usd": 0.054798
     }
   }
 }

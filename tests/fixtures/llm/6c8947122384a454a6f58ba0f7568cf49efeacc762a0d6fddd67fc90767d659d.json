@@ -1,0 +1,18 @@
+{
+  "model": "claude-haiku-4-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "alt.max_agl",
+        "explanation": "The plan flies 150 m above home, exceeding the 120 m limit for the open category."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 1800,
+    "output_tokens": 46
+  }
+}

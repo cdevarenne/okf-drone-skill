@@ -1,0 +1,18 @@
+{
+  "model": "claude-sonnet-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "sora.oso",
+        "explanation": "Knowledge is missing: no verified concept in the bundle governs sora.oso, so the OSO value is not_assessed and this result does not cover it."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 569,
+    "input_tokens": 2656,
+    "output_tokens": 76
+  }
+}
