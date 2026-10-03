@@ -205,7 +205,7 @@ def _time(value: object) -> datetime:
         ((25.0, 90.0), (90.0, 25.0), False),  # cuts the notch
         ((10.0, 50.0), (90.0, 50.0), True),   # along the edge y = 50 of the notch
         ((10.0, 10.0), (50.0, 50.0), True),   # ends at the reflex vertex
-        ((40.0, 60.0), (60.0, 40.0), False),  # through the reflex vertex, out at both sides
+        ((40.0, 60.0), (60.0, 40.0), True),   # through the reflex vertex, inside on both sides
         ((10.0, 10.0), (110.0, 10.0), False), # end outside
     ],
 )
@@ -252,7 +252,8 @@ numbers against the built plan in Step 1, and correct the expected leg names if 
 - [ ] **Step 3:** `check_inside_geofence`: build the path (position items, then Home from
   `plannedHomePosition` if the last item has no position); test the items as now, and each leg
   with `segment_inside` in the frame of the fence. Evidence:
-  `f"{n} items, {k} legs; items outside: {items or 'none'}; legs outside: {legs or 'none'}"`.
+  `f"{n} items, {k} legs; items outside: {', '.join(items) or 'none'}; legs outside: {', '.join(legs) or 'none'}"`
+  (items and legs as strings).
   A leg is named `"<doJumpId>-<doJumpId>"` or `"<doJumpId>-home"`.
 - [ ] **Step 4:** Concept `failsafes/geofence-breach`: new rule text (spec §3.3), and
   `generated.at` = now. The conformance test now fails for this concept (Task 5). **Stop.**
