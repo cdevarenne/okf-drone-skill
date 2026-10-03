@@ -20,6 +20,7 @@ from mavlink_gcs import (
     READ_MESSAGES,
     RESULT_ACCEPTED,
     Gcs,
+    GcsError,
     fence_items,
     int_as_param_float,
     mission_items,
@@ -137,3 +138,25 @@ def test_upload_sends_the_count_again_when_the_vehicle_does_not_answer(monkeypat
     gcs.target, gcs.conn, gcs.recv = (1, 1), type("Conn", (), {"mav": Mav()})(), recv
     gcs.upload(items, MISSION_TYPE_MISSION)
     assert len(counts) == 2 and sent == [0, 1]
+
+
+def test_statustext_keeps_the_last_ten_texts() -> None:
+    """Review 2026-10-02: PX4 gives the reason for an arm refusal in STATUSTEXT."""
+    gcs = _gcs_with(statustext=[])
+    for i in range(12):
+        gcs._update(_Msg("STATUSTEXT", text=f"Preflight Fail: {i}"))
+    assert gcs.state["statustext"] == [f"Preflight Fail: {i}" for i in range(2, 12)]
+
+
+def test_upload_refuses_a_request_outside_the_items() -> None:
+    """Review 2026-10-02: items[msg.seq] had no bounds check."""
+
+    class Mav:
+        def mission_count_send(self, *args) -> None:
+            pass
+
+    gcs = _gcs_with()
+    gcs.target, gcs.conn = (1, 1), type("Conn", (), {"mav": Mav()})()
+    gcs.recv = lambda types, timeout: _Msg("MISSION_REQUEST_INT", seq=5)
+    with pytest.raises(GcsError, match="seq 5"):
+        gcs.upload(mission_items(PLAN)[:2], MISSION_TYPE_MISSION)

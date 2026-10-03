@@ -89,6 +89,15 @@ def test_started_signoff_is_never_overwritten(tmp_path: Path) -> None:
     assert (folder / "report.md").read_text() == report
 
 
+def test_malformed_signoff_returns_2_and_writes_nothing(tmp_path: Path) -> None:
+    """Review 2026-10-02: a signoff.yaml that is not valid YAML crashed render_report."""
+    folder = pipeline(tmp_path, "survey")
+    (folder / "signoff.yaml").write_text("approvals: [\n")
+    report = (folder / "report.md").read_text()
+    assert main(args(tmp_path, "survey")) == 2
+    assert (folder / "report.md").read_text() == report
+
+
 def test_unsigned_signoff_is_rewritten(tmp_path: Path) -> None:
     pipeline(tmp_path, "survey")
     assert main(args(tmp_path, "survey")) == 0

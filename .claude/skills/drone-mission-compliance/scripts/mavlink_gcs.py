@@ -34,7 +34,10 @@ QUIET_MESSAGES = {
     "SERVO_OUTPUT_RAW": 36, "VFR_HUD": 74, "ATTITUDE_TARGET": 83,
     "POSITION_TARGET_LOCAL_NED": 85,
 }  # fmt: skip
-READ_MESSAGES = {"HEARTBEAT", "GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "MISSION_CURRENT"}
+READ_MESSAGES = {
+    "HEARTBEAT", "GLOBAL_POSITION_INT", "EXTENDED_SYS_STATE", "MISSION_CURRENT", "STATUSTEXT"
+}  # fmt: skip
+STATUSTEXT_KEEP = 10  # the last PX4 texts, for example the reason for an arm refusal
 POSITION_MSG_ID = 33  # GLOBAL_POSITION_INT
 POSITION_INTERVAL_US = 100_000  # 10 Hz of simulator time; the track samples at 0.2 s wall time
 UPLOAD_RESEND_S = 2.0  # send MISSION_COUNT again after this many seconds with no request
@@ -116,6 +119,7 @@ class Gcs:
         self.state: dict[str, Any] = {
             "lat": None, "lon": None, "rel_alt_m": None, "armed": False, "landed_state": 0,
             "custom_mode": 0, "mission_seq": 0, "mission_total": 0, "mission_state": 0,
+            "statustext": [],
         }  # fmt: skip
         self._last_heartbeat = 0.0
 
@@ -139,6 +143,8 @@ class Gcs:
         elif kind == "MISSION_CURRENT":
             s["mission_seq"], s["mission_total"] = msg.seq, getattr(msg, "total", 0)
             s["mission_state"] = getattr(msg, "mission_state", 0)
+        elif kind == "STATUSTEXT":
+            s["statustext"] = [*s["statustext"], msg.text][-STATUSTEXT_KEEP:]
 
     def recv(self, types: set[str] | None = None, timeout: float = 1.0) -> Any:
         """Return the next message of one of `types` (any if None), or None after `timeout`."""
@@ -208,6 +214,10 @@ class Gcs:
                         f"upload refused (mission type {mission_type}, result {msg.type})"
                     )
                 return
+            if msg.seq >= len(items):
+                raise GcsError(
+                    f"vehicle asked for seq {msg.seq} of {len(items)} (mission type {mission_type})"
+                )
             it = items[msg.seq]
             self.conn.mav.mission_item_int_send(
                 *self.target, it["seq"], it["frame"], it["command"], 0, it["autocontinue"],

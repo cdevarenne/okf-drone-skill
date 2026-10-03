@@ -113,7 +113,8 @@ def fly(plan: dict[str, Any], params: dict[str, int], timeout_s: float) -> tuple
                 break
             gcs.pump(1)
         else:
-            raise SitlError("PX4 did not arm")
+            texts = "; ".join(gcs.state["statustext"]) or "no message"
+            raise SitlError(f"PX4 did not arm: {texts}")
         for _ in range(START_TRIES_S):  # PX4 checks a new mission before it allows Mission mode
             gcs.command(CMD_MISSION_START, 0, 0)
             gcs.pump(1)
@@ -164,22 +165,23 @@ def run(
     work = (folder / "sitl").resolve()  # PX4 changes to this folder; paths must be absolute
     shutil.rmtree(work, ignore_errors=True)
     work.mkdir(parents=True)
-    px4 = subprocess.Popen(
-        [
-            str(px4_build.resolve() / "bin" / "px4"),
-            "-d",
-            str(px4_build.resolve() / "etc"),
-            "-w",
-            str(work),
-        ],
-        env=px4_env(mission, speed),
-        stdout=(work / "px4.log").open("w"),
-        stderr=subprocess.STDOUT,
-    )
-    try:
-        track, params = fly(json.loads(plan_text), failsafe_params(mission, bundle), timeout_s)
-    finally:
-        stop_px4(px4)
+    with (work / "px4.log").open("w") as px4_log:
+        px4 = subprocess.Popen(
+            [
+                str(px4_build.resolve() / "bin" / "px4"),
+                "-d",
+                str(px4_build.resolve() / "etc"),
+                "-w",
+                str(work),
+            ],
+            env=px4_env(mission, speed),
+            stdout=px4_log,
+            stderr=subprocess.STDOUT,
+        )
+        try:
+            track, params = fly(json.loads(plan_text), failsafe_params(mission, bundle), timeout_s)
+        finally:
+            stop_px4(px4)
     checks = check_track(mission, json.loads(plan_text), track, params, bundle)
     air = [p for p in track if p["in_air"]]
     log = (work / "px4.log").read_text(encoding="utf-8", errors="replace").splitlines()

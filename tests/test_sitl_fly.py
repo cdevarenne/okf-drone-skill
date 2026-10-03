@@ -92,3 +92,25 @@ def test_stop_px4_kills_a_process_that_ignores_sigterm() -> None:
     proc.stdout.readline()  # the handler is set
     stop_px4(proc, 0.5)
     assert proc.returncode is not None
+
+
+def test_px4_log_is_closed_after_the_run(tmp_path: Path, monkeypatch) -> None:
+    """Review 2026-10-02: the px4.log file object stayed open."""
+    (tmp_path / "m01-survey-open").mkdir()
+    shutil.copy(
+        ROOT / "examples" / "m01-survey-open" / "mission.plan", tmp_path / "m01-survey-open"
+    )
+    logs = []
+
+    def popen(argv, env, stdout, stderr):
+        logs.append(stdout)
+
+    def fly(plan, params, timeout_s):
+        raise sitl_fly.SitlError("PX4 did not arm")
+
+    monkeypatch.setattr(sitl_fly, "running_px4", list)
+    monkeypatch.setattr(sitl_fly.subprocess, "Popen", popen)
+    monkeypatch.setattr(sitl_fly, "fly", fly)
+    monkeypatch.setattr(sitl_fly, "stop_px4", lambda px4: None)
+    assert main(_m01_args(tmp_path)) == 2
+    assert logs and logs[0].closed

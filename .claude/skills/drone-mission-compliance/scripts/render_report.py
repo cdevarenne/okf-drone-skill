@@ -306,7 +306,10 @@ def started(path: Path) -> bool:
     """Return True if signoff.yaml exists and a person filled any approval field."""
     if not path.exists():
         return False
-    doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    try:
+        doc = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    except yaml.YAMLError as e:
+        raise SignoffError(f"{path}: not valid YAML; a person must correct it") from e
     return any(
         str(a.get(f) or "").strip() for a in doc.get("approvals") or [] for f in APPROVAL_FIELDS
     )
