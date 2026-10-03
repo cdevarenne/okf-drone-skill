@@ -1,5 +1,7 @@
 # okf-drone-skill
 
+> **This is a work in progress.**
+
 An Open Knowledge Format (OKF) bundle grounds an agent skill. The skill plans one civil drone
 mission, validates the plan against the bundle, scores the risk with EASA SORA 2.5, and writes a
 go / no-go report for a human to sign.
