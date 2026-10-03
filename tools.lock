@@ -11,4 +11,4 @@ SORA_EDITION=2.5
 # PX4 autopilot for SITL (DRN-10): https://github.com/PX4/PX4-Autopilot. Parameter reference S7 is v1.17.
 PX4_VERSION=v1.17.0
 # Default model for the optional LLM steps (DRN-09). Prices in llm.py, from the pricing table of 2026-09-25.
-LLM_MODEL=claude-opus-5-5
+LLM_MODEL=claude-sonnet-5-5

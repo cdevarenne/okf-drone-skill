@@ -66,7 +66,7 @@ API; CI runs.
 
 | Dependency | Pin | Notes |
 |---|---|---|
-| Model | `LLM_MODEL=claude-opus-5-5` in `tools.lock` | Default. `LLM_MODEL` in the environment selects another priced model for the eval (§7). |
+| Model | `LLM_MODEL=claude-sonnet-5-5` in `tools.lock` | Default, chosen by the owner from the eval (§9 decision 5). `LLM_MODEL` in the environment selects another priced model. |
 | SDK | `anthropic==<exact>`, extra `llm` in `pyproject.toml` | The plan sets the exact version from `uv add`. |
 | Prices | `PRICES` in `llm.py`, with the date of the pricing page | USD per million tokens (input, output) on 2026-09-25: Opus 5.5 4 / 20; Sonnet 5.5 2 / 10; Haiku 4.5 1 / 5. A model with no price is an error. |
 
@@ -221,8 +221,11 @@ A copy of the template `llm.py`, reduced to what this spec uses:
    calculation, a unit conversion, or a guess. Each field is accepted or dropped by itself.
 4. Narrate is accepted or rejected as a whole, as in the template. A rejected narrative
    leaves the v1 report. No free-text summary (owner, 2026-10-02).
-5. Default model `claude-opus-5-5` at effort `low`, pinned in `tools.lock`. The eval measures
-   the other models. The owner selects the default from the eval results.
+5. Default model: first `claude-opus-5-5` at effort `low`. The eval (`docs/data/drn-09-eval.json`)
+   measured Opus 5.5, Sonnet 5.5 and Haiku 4.5. The owner chose `claude-sonnet-5-5` (2026-10-02):
+   on the eval it gives the same intake and narrate results as Opus 5.5 at a lower recorded
+   cost; Haiku 4.5 leaves more fields missing. The eval has seven texts; it shows that the
+   models can do the task, not how they rank on other texts.
 6. Default budget `LLM_BUDGET_USD=0.50` per run. Default mode `replay`.
 7. `llm.py` is copied from the template and reduced, as `okf_lib.py` was. A shared package
    waits for ENG-01.

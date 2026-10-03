@@ -91,7 +91,7 @@ class LLM:
     """Structured JSON calls with a response cache, a usage ledger and a per-run budget guard."""
 
     mode: str = "replay"
-    model: str = "claude-opus-5-5"
+    model: str = "claude-sonnet-5-5"  # tools.lock LLM_MODEL; from_env reads it
     fixtures: Path = Path("tests/fixtures/llm")
     cache: Path = Path("out/llm-cache")
     ledger: Path = Path("out/llm-usage.jsonl")

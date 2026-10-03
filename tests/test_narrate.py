@@ -7,6 +7,7 @@ from pathlib import Path
 import pytest
 import yaml
 from bundle_helpers import BUNDLE
+from gen_plan import read_pins
 from mission import load_mission
 from narrate import inputs, main, request, validate
 from pipeline import run_mission
@@ -14,6 +15,7 @@ from render_report import inputs_sha256
 from render_report import main as render_main
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_MODEL = read_pins(ROOT / "tools.lock")["LLM_MODEL"]
 M03 = ROOT / "missions" / "m03-outside-geofence.yaml"
 M01 = ROOT / "missions" / "m01-survey-open.yaml"
 EXPLANATION = "The plan leaves the geofence of failsafes/geofence-breach."
@@ -91,7 +93,8 @@ def test_numbers_must_be_digits(m03: Path) -> None:
     assert any("number in words" in e for e in errors)
 
 
-def _record(folder: Path, fixtures: Path, output: dict, model: str = "claude-opus-5-5") -> None:
+def _record(folder: Path, fixtures: Path, output: dict, model: str = "") -> None:
+    model = model or DEFAULT_MODEL
     read = lambda name: json.loads((folder / name).read_text())
     req = request(inputs(load_mission(M03), read("validation.json"), read("risk.json"), BUNDLE))
     fixtures.mkdir(parents=True, exist_ok=True)

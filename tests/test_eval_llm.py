@@ -7,9 +7,12 @@ import intake
 import pytest
 from bundle_helpers import BUNDLE
 from eval_llm import label_for, main, score_intake
+from gen_plan import read_pins
+from llm import cost_usd
 from mission import load_mission
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_MODEL = read_pins(ROOT / "tools.lock")["LLM_MODEL"]
 LABEL = load_mission(ROOT / "missions" / "m01-survey-open.yaml")
 
 
@@ -38,7 +41,8 @@ def test_lists_and_numbers_compare_as_values() -> None:
     assert score_intake(accepted, LABEL)["correct"] == 1
 
 
-def _record(fixtures: Path, request, output: dict, model: str = "claude-opus-5-5") -> None:
+def _record(fixtures: Path, request, output: dict, model: str = "") -> None:
+    model = model or DEFAULT_MODEL
     usage = {"input_tokens": 1000, "output_tokens": 500}
     doc = {"task": request.task, "model": model, "output": output, "usage": usage}
     fixtures.mkdir(parents=True, exist_ok=True)
@@ -70,11 +74,12 @@ def small_set(tmp_path: Path, monkeypatch) -> list[str]:
 
 def test_full_run_on_recorded_answers(small_set: list[str], tmp_path: Path) -> None:
     assert main(small_set) == 0
-    result = json.loads((tmp_path / "eval.json").read_text())["models"]["claude-opus-5-5"]
+    result = json.loads((tmp_path / "eval.json").read_text())["models"][DEFAULT_MODEL]
     assert result["intake"]["m01"]["correct"] == 2 and result["intake"]["m01"]["wrong"] == []
     assert result["narrate"]["m01-survey-open"] == {"skipped": "no fail and no gap"}
-    # One answer (intake; m01 is GO, so no narrate call): 1000 tokens in (4 USD/M), 500 out (20 USD/M).
-    assert result["cost_usd"] == pytest.approx(0.014)
+    # One answer (intake; m01 is GO, so no narrate call), priced for the pinned model.
+    usage = {"input_tokens": 1000, "output_tokens": 500}
+    assert result["cost_usd"] == pytest.approx(cost_usd(DEFAULT_MODEL, usage))
 
 
 def test_missing_answer_names_the_text(small_set: list[str], tmp_path: Path, capsys) -> None:

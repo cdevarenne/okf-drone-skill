@@ -52,3 +52,8 @@ def test_px4_version_is_a_release_tag() -> None:
 
 def test_llm_model_is_a_claude_model_id() -> None:
     assert re.fullmatch(r"claude-[a-z0-9-]+", read_lock()["LLM_MODEL"])
+
+
+def test_llm_model_is_the_owner_choice() -> None:
+    """The owner chose Sonnet 5.5 from the DRN-09 eval (2026-10-02)."""
+    assert read_lock()["LLM_MODEL"] == "claude-sonnet-5-5"

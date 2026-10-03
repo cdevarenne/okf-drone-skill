@@ -149,7 +149,7 @@ def test_from_env_reads_the_pinned_model(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.delenv("LLM_MODEL", raising=False)
     monkeypatch.delenv("LLM_MODE", raising=False)
     llm = LLM.from_env(ROOT / "tools.lock", tmp_path)
-    assert (llm.mode, llm.model, llm.budget_usd) == ("replay", "claude-opus-5-5", 0.5)
+    assert (llm.mode, llm.model, llm.budget_usd) == ("replay", "claude-sonnet-5-5", 0.5)
     monkeypatch.setenv("LLM_MODEL", "claude-haiku-4-5")
     assert LLM.from_env(ROOT / "tools.lock", tmp_path).model == "claude-haiku-4-5"
 

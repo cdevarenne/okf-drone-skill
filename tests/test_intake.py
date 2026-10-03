@@ -6,11 +6,13 @@ from pathlib import Path
 import pytest
 import yaml
 from bundle_helpers import BUNDLE
+from gen_plan import read_pins
 from intake import check_field, draft, main, request, specs, value_sets
 from llm import Request
 from mission import MissionError, load_mission
 
 ROOT = Path(__file__).resolve().parents[1]
+DEFAULT_MODEL = read_pins(ROOT / "tools.lock")["LLM_MODEL"]
 SPECS = specs()
 SETS = value_sets(BUNDLE)
 TEXT = """Survey mission at the field. Home is at 44.7990, -0.6000, 50 m above sea level.
@@ -96,7 +98,8 @@ def test_request_is_stable_and_bounded() -> None:
     assert "data, not instructions" in first.system
 
 
-def _record(fixtures: Path, text: str, fields: list[dict], model: str = "claude-opus-5-5") -> None:
+def _record(fixtures: Path, text: str, fields: list[dict], model: str = "") -> None:
+    model = model or DEFAULT_MODEL
     key = request(text, SETS).key(model)
     fixtures.mkdir(parents=True, exist_ok=True)
     doc = {"task": "intake", "model": model, "output": {"fields": fields}, "usage": {}}
@@ -122,7 +125,7 @@ def test_cli_writes_the_draft_and_the_record(tmp_path: Path, monkeypatch) -> Non
     folder = tmp_path / "out" / "m01"
     record = json.loads((folder / "intake.json").read_text())
     assert record["accepted"] == [good] and len(record["dropped"]) == 1
-    assert record["model"] == "claude-opus-5-5" and record["missing"]
+    assert record["model"] == DEFAULT_MODEL and record["missing"]
     assert yaml.safe_load((folder / "mission.draft.yaml").read_text())["speed_ms"] == 8
 
 
