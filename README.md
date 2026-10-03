@@ -22,7 +22,7 @@ No flight controller, no live NOTAM or weather feeds in v1.
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
 | 5 | Screenshots, examples, "How this was built" | Done |
 | DRN-10 | Optional PX4 SITL flight check (`make px4`, `make sitl`) | Done, flown by the owner |
-| DRN-11 | Review fixes: `SKILL.md`, geofence legs, re-verification of a changed concept, ARC flag against the altitude | Done; changed concepts verified by the owner; SITL check open (#48) |
+| DRN-11 | Review fixes: `SKILL.md`, geofence legs, re-verification of a changed concept, ARC flag against the altitude | Done; changed concepts verified, m01 flown again by the owner |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
 
