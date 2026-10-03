@@ -7,7 +7,7 @@ OKF := reference-agent @ git+https://github.com/GoogleCloudPlatform/open-knowled
 PX4_DIR := .tools/px4
 PX4_BUILD := $(PX4_DIR)/build/px4_sitl_default
 
-.PHONY: bootstrap plan seeded examples px4 sitl intake narrate test lint verify render clean
+.PHONY: bootstrap plan seeded examples px4 sitl intake narrate eval-llm test lint verify render clean
 
 bootstrap:
 	uv sync
@@ -39,6 +39,9 @@ intake:  # optional LLM step (DRN-09); LLM_MODE=replay unless the owner sets it
 
 narrate:  # optional LLM step (DRN-09), after make plan; LLM_MODE=replay unless the owner sets it
 	uv run --extra llm python $(SCRIPTS)/narrate.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out
+
+eval-llm:  # DRN-09 eval on missions/text and the seeded missions; replay unless the owner records
+	uv run --extra llm python $(SCRIPTS)/eval_llm.py
 
 test:
 	uv run pytest -q
