@@ -1,0 +1,153 @@
+{
+  "model": "claude-opus-5-5",
+  "output": {
+    "fields": [
+      {
+        "path": "mission_type",
+        "quote": "Mapping survey of a field",
+        "value": "mapping-survey"
+      },
+      {
+        "path": "category",
+        "quote": "flown in the open category",
+        "value": "open"
+      },
+      {
+        "path": "operation",
+        "quote": "in visual line of sight (VLOS)",
+        "value": "VLOS"
+      },
+      {
+        "path": "home.lat",
+        "quote": "Home is at 44.7990, -0.6000",
+        "value": 44.799
+      },
+      {
+        "path": "home.lon",
+        "quote": "Home is at 44.7990, -0.6000",
+        "value": -0.6
+      },
+      {
+        "path": "home.amsl_m",
+        "quote": "at 50 m above sea level",
+        "value": 50
+      },
+      {
+        "path": "terrain",
+        "quote": "The terrain is flat.",
+        "value": "flat"
+      },
+      {
+        "path": "area.polygon",
+        "quote": "The work area is the polygon 44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985.",
+        "value": [
+          [
+            44.7985,
+            -0.6015
+          ],
+          [
+            44.8025,
+            -0.6015
+          ],
+          [
+            44.8025,
+            -0.5985
+          ],
+          [
+            44.7985,
+            -0.5985
+          ]
+        ]
+      },
+      {
+        "path": "geofence.polygon",
+        "quote": "The geofence is the polygon 44.7980, -0.6020; 44.8030, -0.6020; 44.8030, -0.5980; 44.7980, -0.5980.",
+        "value": [
+          [
+            44.798,
+            -0.602
+          ],
+          [
+            44.803,
+            -0.602
+          ],
+          [
+            44.803,
+            -0.598
+          ],
+          [
+            44.798,
+            -0.598
+          ]
+        ]
+      },
+      {
+        "path": "max_altitude_agl_m",
+        "quote": "The flight is at 100 m above ground",
+        "value": 100
+      },
+      {
+        "path": "speed_ms",
+        "quote": "at 8 m/s",
+        "value": 8
+      },
+      {
+        "path": "pattern.spacing_m",
+        "quote": "The survey lines are 40 m apart.",
+        "value": 40
+      },
+      {
+        "path": "ua.mtom_kg",
+        "quote": "The drone weighs 0.9 kg",
+        "value": 0.9
+      },
+      {
+        "path": "ua.char_dimension_m",
+        "quote": "is 0.35 m across",
+        "value": 0.35
+      },
+      {
+        "path": "ua.max_speed_ms",
+        "quote": "has a top speed of 15 m/s",
+        "value": 15
+      },
+      {
+        "path": "ground.population_density",
+        "quote": "The ground below is sparsely populated.",
+        "value": "sparsely-populated"
+      },
+      {
+        "path": "airspace.class",
+        "quote": "The airspace is class G",
+        "value": "G"
+      },
+      {
+        "path": "airspace.declared_by",
+        "quote": "as declared by the operator",
+        "value": "operator"
+      },
+      {
+        "path": "failsafes.low_battery",
+        "quote": "On low battery it does a return to launch.",
+        "value": "RTL"
+      },
+      {
+        "path": "failsafes.critical_battery",
+        "quote": "On critical battery it must land.",
+        "value": "LAND"
+      },
+      {
+        "path": "failsafes.geofence_breach",
+        "quote": "On a geofence breach it does a return to launch.",
+        "value": "RTL"
+      }
+    ]
+  },
+  "task": "intake",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 2805,
+    "input_tokens": 324,
+    "output_tokens": 932
+  }
+}

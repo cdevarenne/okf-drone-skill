@@ -1,0 +1,10 @@
+Infrastructure inspection of a power line, flown in the open category, in visual line of sight (VLOS).
+Home is at 44.7990, -0.6000, at 50 m above sea level. The terrain is flat.
+The work area is the polygon 44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985.
+The geofence is the polygon 44.7980, -0.6020; 44.8030, -0.6020; 44.8030, -0.5980; 44.7980, -0.5980.
+We fly at 150 m above ground at 8 m/s.
+The inspection route is 44.7995, -0.6008; 44.8005, -0.6002; 44.8015, -0.5996.
+The drone weighs 0.9 kg, is 0.35 m across, and has a top speed of 15 m/s.
+The ground below is sparsely populated. The airspace is class G, as declared by the operator.
+On lost link the drone does a return to launch.
+On low battery it does a return to launch. On critical battery it must land. On a geofence breach it does a return to launch.

@@ -1,0 +1,18 @@
+{
+  "model": "claude-opus-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "alt.max_agl",
+        "explanation": "The plan flies above 120 m, with the highest item at 150 m above home over flat terrain against a limit of 120 m under regulations/easa-open."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 569,
+    "cache_read_input_tokens": 0,
+    "input_tokens": 1708,
+    "output_tokens": 78
+  }
+}

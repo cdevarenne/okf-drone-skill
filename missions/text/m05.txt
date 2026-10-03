@@ -1,0 +1,18 @@
+Mapping survey of a field, flown in the specific category, beyond visual line of sight (BVLOS).
+Home is at 44.7990, -0.6000, at 50 m above sea level. The terrain is flat.
+The work area is the polygon 44.7985, -0.6015; 44.8025, -0.6015; 44.8025, -0.5985; 44.7985, -0.5985.
+The geofence is the polygon 44.7980, -0.6020; 44.8030, -0.6020; 44.8030, -0.5980; 44.7980, -0.5980.
+We fly at 100 m above ground at 8 m/s. The survey lines are 40 m apart.
+The drone weighs 0.9 kg, is 0.35 m across, and has a top speed of 15 m/s.
+The ground below is sparsely populated. The airspace is class G, as declared by the operator.
+The airspace is not atypical airspace.
+The flight stays below FL600.
+The flight is not in an airport environment.
+The flight stays below 500 ft above ground.
+There is no Mode C veil or TMZ.
+The flight is not in controlled airspace.
+The flight is not over an urban area.
+We claim SORA mitigation m1a at low robustness.
+The adjacent area has fewer than 5000 people per km2, with assemblies of under 40k people, and people there have shelter.
+On lost link the drone does a return to launch.
+On low battery it does a return to launch. On critical battery it must land. On a geofence breach it does a return to launch.

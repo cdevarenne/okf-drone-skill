@@ -1,0 +1,18 @@
+{
+  "model": "claude-opus-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "failsafe.lost_link",
+        "explanation": "The check failed because the mission declares no lost_link action (evidence: failsafes.lost_link: not declared), so the response to a Lost link event under failsafes/lost-link is not defined."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 569,
+    "input_tokens": 1661,
+    "output_tokens": 92
+  }
+}

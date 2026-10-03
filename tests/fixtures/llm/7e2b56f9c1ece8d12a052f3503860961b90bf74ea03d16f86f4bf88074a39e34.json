@@ -1,0 +1,18 @@
+{
+  "model": "claude-opus-5-5",
+  "output": {
+    "items": [
+      {
+        "check_id": "sora.oso",
+        "explanation": "No verified concept in the bundle governs sora.oso, so the operational safety objectives for SAIL II were not assessed and that knowledge is missing for the person who decides."
+      }
+    ]
+  },
+  "task": "narrate",
+  "usage": {
+    "cache_creation_input_tokens": 0,
+    "cache_read_input_tokens": 569,
+    "input_tokens": 2656,
+    "output_tokens": 82
+  }
+}
