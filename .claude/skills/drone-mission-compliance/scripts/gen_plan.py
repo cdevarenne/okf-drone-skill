@@ -70,6 +70,8 @@ def pattern_points(mission: dict[str, Any], pattern: str) -> list[tuple[float, f
         xy = expanding_square(area_xy, frame.to_xy(tuple(spec["datum"])), spec["spacing_m"])
     else:
         raise GapError(f"gap: gen_plan has no generator for pattern {pattern!r}")
+    if not xy:
+        raise MissionError(f"the {pattern} gives no waypoint in the area; use a smaller spacing_m")
     return [frame.to_latlon(q) for q in xy]
 
 

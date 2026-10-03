@@ -110,6 +110,13 @@ def test_pattern_input_must_match_the_mission_type() -> None:
         plan_for("survey", pattern=copy.deepcopy(route))
 
 
+def test_grid_with_no_waypoint_is_a_bad_request() -> None:
+    """Review 2026-10-02: an area 5.5 m wide with spacing 40 m gave takeoff and RTL only, and GO."""
+    narrow = [[44.7985, -0.6015], [44.79855, -0.6015], [44.79855, -0.5985], [44.7985, -0.5985]]
+    with pytest.raises(MissionError, match="no waypoint"):
+        plan_for("survey", area={"polygon": narrow})
+
+
 def test_cli_writes_the_plan(tmp_path: Path) -> None:
     args = ["--knowledge", str(ROOT / "knowledge"), "--lock", str(ROOT / "tools.lock")]
     code = main([*args, "--mission", str(MISSIONS / "search.yaml"), "--out", str(tmp_path)])
