@@ -13,6 +13,35 @@ No flight controller, no live NOTAM or weather feeds in v1.
 
 ## Status
 
+Version 1.0.0 (tag `v1.0.0`).
+
+**What works**
+
+- `make plan` turns one mission request into a QGroundControl `.plan`, checks it against the
+  bundle, scores the risk with SORA 2.5 (iGRC to SAIL and containment), and writes a report and
+  a sign-off file. It calls no LLM. The five seeded missions get their expected decisions
+  ([`docs/data/seeded.json`](docs/data/seeded.json)).
+- `make sitl` (optional) flies the plan in PX4 SITL and checks the flown track against the same
+  concepts. The owner flew m01 to m05.
+- `make intake` and `make narrate` (optional) use an LLM at the two ends of the pipeline, and
+  code checks each answer. `make eval-llm` measures them on the seeded missions
+  ([`docs/data/drn-09-eval.json`](docs/data/drn-09-eval.json)).
+
+**What it shows**
+
+- The grounding pattern of okf-grc-skill works in a second domain. Each check and score cites
+  a concept that a person verified. A missing concept, or a concept changed after its
+  verification, is a gap and gives HOLD, never a default value.
+- An LLM can help without making the decision. Code accepts or rejects each answer; the eval
+  found a defect in the intake checks, and a test now covers it.
+- A person decides. The tool proposes GO, NO-GO or HOLD and never fills the approvals.
+
+**What's next:** the SORA OSO table, so that a specific-category mission can be GO; terrain
+data for the height check; SITL results and failsafe tests in the report. See
+[What's next](#whats-next).
+
+### Phases
+
 | Phase | Content | State |
 |---|---|---|
 | 0 | Scaffold, pinned versions, `.plan` subset schema, source register | Done |
