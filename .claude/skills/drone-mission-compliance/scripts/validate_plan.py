@@ -10,10 +10,11 @@ import argparse
 import json
 import sys
 from collections.abc import Callable
+from itertools import pairwise
 from pathlib import Path
 from typing import Any
 
-from geometry import LocalFrame, centroid, contains
+from geometry import LocalFrame, centroid, contains, segment_inside
 from mission import MissionError, load_mission
 from okf_lib import Bundle, Concept, load_bundle
 from results import (
@@ -102,20 +103,35 @@ def check_inside_geofence(m: Mission, plan: Plan, c: Concept, bundle: Bundle) ->
     ]
     if not fences:
         return result(c, cid, FAIL, "no inclusion polygon", "the plan has no geofence")
-    outside = []
-    for item in position_items(plan):
-        p = (item["params"][4], item["params"][5])
-        if not any(_inside(fence, p) for fence in fences):
-            outside.append(item["doJumpId"])
-    evidence = f"{len(position_items(plan))} items; outside: {outside or 'none'}"
-    if outside:
-        return result(c, cid, FAIL, evidence, f"items {outside} are outside the geofence")
-    return result(c, cid, PASS, evidence, "every item is inside the geofence")
+    items = position_items(plan)
+    path = [(str(i["doJumpId"]), (i["params"][4], i["params"][5])) for i in items]
+    if "Altitude" not in plan["mission"]["items"][-1]:  # RTL flies back to Home
+        path.append(("home", tuple(plan["mission"]["plannedHomePosition"][:2])))
+    outside = [n for n, p in path[: len(items)] if not any(_inside(f, p) for f in fences)]
+    legs = [
+        f"{a}-{b}"
+        for (a, p), (b, q) in pairwise(path)
+        if not any(_leg_inside(f, p, q) for f in fences)
+    ]
+    evidence = (
+        f"{len(items)} items, {len(path) - 1} legs; items outside: {', '.join(outside) or 'none'}"
+        f"; legs outside: {', '.join(legs) or 'none'}"
+    )
+    if outside or legs:
+        return result(c, cid, FAIL, evidence, "the flight path leaves the geofence")
+    return result(c, cid, PASS, evidence, "the flight path stays inside the geofence")
 
 
 def _inside(fence: list[tuple[float, float]], p: tuple[float, float]) -> bool:
     frame = LocalFrame(centroid(fence))
     return contains([frame.to_xy(q) for q in fence], frame.to_xy(p))
+
+
+def _leg_inside(
+    fence: list[tuple[float, float]], p: tuple[float, float], q: tuple[float, float]
+) -> bool:
+    frame = LocalFrame(centroid(fence))
+    return segment_inside([frame.to_xy(v) for v in fence], frame.to_xy(p), frame.to_xy(q))
 
 
 def _failsafe(m: Mission, c: Concept, cid: str, key: str, allowed: list[str]) -> CheckResult:

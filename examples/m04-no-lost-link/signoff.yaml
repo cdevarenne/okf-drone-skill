@@ -3,7 +3,7 @@
 mission_id: m04-no-lost-link
 proposed_decision: NO-GO
 plan_sha256: 4743831b92441c37a1e29841e210320ec33083045ba32e3fbfba0da638bf4a8a
-report_sha256: 5ddb32d0925fb19638ec769e799759407268509d54f6f9b28441166c722ddba5
+report_sha256: 757f53fc3de79ac2777801a7272dae0bbcb822c5e85067c1020865c4b7066c37
 approvals:
   - role: "Remote Pilot in Command (RPIC)"
     name: ""

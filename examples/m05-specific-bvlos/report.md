@@ -31,7 +31,7 @@ Airspace, NOTAM, TFR and weather are **declared inputs** in v1. The tool does no
 | category.operation | not_applicable | regulations/easa-open | category specific | open category only |
 | plan.first_item_takeoff | pass | mavlink/nav-takeoff | first item command 22 | the plan starts with a takeoff |
 | plan.last_item_return | pass | mavlink/nav-rtl | last item command 20; allowed [20, 21] | the plan ends with RTL or LAND |
-| plan.inside_geofence | pass | failsafes/geofence-breach | 23 items; outside: none | every item is inside the geofence |
+| plan.inside_geofence | pass | failsafes/geofence-breach | 23 items, 23 legs; items outside: none; legs outside: none | the flight path stays inside the geofence |
 | failsafe.lost_link | pass | failsafes/lost-link | failsafes.lost_link: RTL | the lost_link action is RTL |
 | failsafe.low_battery | pass | failsafes/low-battery | failsafes.low_battery: RTL | the low_battery action is RTL |
 | failsafe.critical_battery | pass | failsafes/low-battery | failsafes.critical_battery: LAND | the critical_battery action is LAND |
@@ -133,7 +133,7 @@ Rule (spec §5.5): NO-GO if a check fails; else HOLD if a check is a gap; else G
 
 | Concept | Title | Verified | Source |
 |---|---|---|---|
-| failsafes/geofence-breach | Geofence breach | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Geofence, "Action on Breach: RTL / Loiter / Land / Warn Only". |
+| failsafes/geofence-breach | Geofence breach | human:cdevarenne 2026-09-28T21:00:00-07:00, human:cdevarenne 2026-10-02T18:37:00-07:00 | S10: §7 Geofence, "Action on Breach: RTL / Loiter / Land / Warn Only". |
 | failsafes/lost-link | Lost link | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Loss of C2 Link: RTL / Land / Loiter". |
 | failsafes/low-battery | Low and critical battery | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Low Battery Trigger ... Action: RTL / Land" and "Critical Battery |
 | hazards/gps-jamming | GPS signal loss or jamming | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "GPS Signal Loss/Jamming". |
@@ -150,7 +150,7 @@ Rule (spec §5.5): NO-GO if a check fails; else HOLD if a check is a gap; else G
 | mavlink/nav-takeoff | Take off (MAV_CMD_NAV_TAKEOFF, 22) | human:cdevarenne 2026-09-28T21:00:00-07:00 | S9: MAVLink common message set, `MAV_CMD_NAV_TAKEOFF` (22); `MAV_FRAME` enum. |
 | regulations/easa-open | EASA 'open' category | human:cdevarenne 2026-09-28T21:00:00-07:00 | S1: Reg. (EU) 2019/947, consolidated 2025-05-01, Article 4(1)(b), (d), (e) and 4(2); Annex |
 | regulations/easa-specific-sora | EASA 'specific' category and SORA 2.5 | human:cdevarenne 2026-09-28T21:00:00-07:00 | S1: Reg. (EU) 2019/947, consolidated 2025-05-01, Article 5(1) and (2); Article 11(1). |
-| risk/arc | Air risk class (ARC) and TMPR | human:cdevarenne 2026-09-28T21:41:00-07:00 | S2: AMC1 Article 11, S.4.4.3, Figure 6 (p. 32); S.4.5.4 (p. 34); S.4.6.3, Table 6 (p. 35). |
+| risk/arc | Air risk class (ARC) and TMPR | human:cdevarenne 2026-09-28T21:41:00-07:00, human:cdevarenne 2026-10-02T18:37:00-07:00 | S2: AMC1 Article 11, S.4.4.3, Figure 6 (p. 32); S.4.5.4 (p. 34); S.4.6.3, Table 6 (p. 35). |
 | risk/containment | Containment requirements | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.8.3, Tables 8 to 13 (pp. 38-41). |
 | risk/igrc | Intrinsic ground risk class (iGRC) | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.2.3 Table 1 (iGRC) and Table 2 (qualitative descriptors), |
 | risk/m1a | M1(A) Strategic mitigation: sheltering | human:cdevarenne 2026-09-28T21:00:00-07:00 | S2: AMC1 Article 11, S.4.3.3, Table 5 (p. 29). |

@@ -31,7 +31,7 @@ Airspace, NOTAM, TFR and weather are **declared inputs** in v1. The tool does no
 | category.operation | pass | regulations/easa-open | operation VLOS; MTOM 0.9 kg | the operation meets the open-category conditions |
 | plan.first_item_takeoff | pass | mavlink/nav-takeoff | first item command 22 | the plan starts with a takeoff |
 | plan.last_item_return | pass | mavlink/nav-rtl | last item command 20; allowed [20, 21] | the plan ends with RTL or LAND |
-| plan.inside_geofence | fail | failsafes/geofence-breach | 15 items; outside: [3, 4, 7, 8, 11, 12, 15] | items [3, 4, 7, 8, 11, 12, 15] are outside the geofence |
+| plan.inside_geofence | fail | failsafes/geofence-breach | 15 items, 15 legs; items outside: 3, 4, 7, 8, 11, 12, 15; legs outside: 2-3, 3-4, 4-5, 6-7, 7-8, 8-9, 10-11, 11-12, 12-13, 14-15, 15-home | the flight path leaves the geofence |
 | failsafe.lost_link | pass | failsafes/lost-link | failsafes.lost_link: RTL | the lost_link action is RTL |
 | failsafe.low_battery | pass | failsafes/low-battery | failsafes.low_battery: RTL | the low_battery action is RTL |
 | failsafe.critical_battery | pass | failsafes/low-battery | failsafes.critical_battery: LAND | the critical_battery action is LAND |
@@ -92,14 +92,14 @@ Failsafe settings (declared; they are vehicle parameters, not part of the plan):
 
 Rule (spec §5.5): NO-GO if a check fails; else HOLD if a check is a gap; else GO.
 
-- Failed: `plan.inside_geofence` (failsafes/geofence-breach): items [3, 4, 7, 8, 11, 12, 15] are outside the geofence
+- Failed: `plan.inside_geofence` (failsafes/geofence-breach): the flight path leaves the geofence
 - Gaps: none
 
 ## 7. Audit trail
 
 | Concept | Title | Verified | Source |
 |---|---|---|---|
-| failsafes/geofence-breach | Geofence breach | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Geofence, "Action on Breach: RTL / Loiter / Land / Warn Only". |
+| failsafes/geofence-breach | Geofence breach | human:cdevarenne 2026-09-28T21:00:00-07:00, human:cdevarenne 2026-10-02T18:37:00-07:00 | S10: §7 Geofence, "Action on Breach: RTL / Loiter / Land / Warn Only". |
 | failsafes/lost-link | Lost link | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Loss of C2 Link: RTL / Land / Loiter". |
 | failsafes/low-battery | Low and critical battery | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §7 Failsafe Settings, "Low Battery Trigger ... Action: RTL / Land" and "Critical Battery |
 | hazards/gps-jamming | GPS signal loss or jamming | human:cdevarenne 2026-09-28T21:00:00-07:00 | S10: §6 Risk Assessment & Mitigation, row "GPS Signal Loss/Jamming". |

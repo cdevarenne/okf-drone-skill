@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Sequence
+from itertools import pairwise
 
 EARTH_RADIUS_M = 6371008.8  # IUGG mean earth radius
 LatLon = tuple[float, float]
@@ -77,6 +78,32 @@ def contains(poly: Sequence[XY], q: XY) -> bool:
             if q[0] < x:
                 inside = not inside
     return inside
+
+
+def segment_inside(poly: Sequence[XY], p: XY, q: XY) -> bool:
+    """Return True if the segment p-q is inside the polygon or on its boundary.
+
+    Both ends are inside, no edge crosses the segment at a point inside both, and the
+    midpoint of each part between the polygon vertices on the segment is inside.
+    """
+    if not (contains(poly, p) and contains(poly, q)):
+        return False
+    n = len(poly)
+    for i in range(n):
+        a, b = poly[i], poly[(i + 1) % n]
+        if _cross(p, q, a) * _cross(p, q, b) < 0 and _cross(a, b, p) * _cross(a, b, q) < 0:
+            return False
+    d = (q[0] - p[0], q[1] - p[1])
+    length2 = d[0] ** 2 + d[1] ** 2
+    cuts = [0.0, 1.0]
+    for v in poly:
+        if length2 and on_boundary([p, q], v):
+            cuts.append(((v[0] - p[0]) * d[0] + (v[1] - p[1]) * d[1]) / length2)
+    cuts.sort()
+    return all(
+        contains(poly, (p[0] + d[0] * (s + t) / 2, p[1] + d[1] * (s + t) / 2))
+        for s, t in pairwise(cuts)
+    )
 
 
 def _chord(poly: Sequence[XY], y: float) -> tuple[float, float] | None:

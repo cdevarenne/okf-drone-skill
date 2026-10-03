@@ -13,16 +13,20 @@ table:
     values: {WARN: 1, LOITER: 2, RTL: 3, LAND: 5}
 generated:
   by: claude-code
-  at: "2026-09-28T20:18:00-07:00"
+  at: "2026-10-02T18:30:19-07:00"
 verified:
   - by: "human:cdevarenne"
     at: "2026-09-28T21:00:00-07:00"
+  - by: "human:cdevarenne"
+    at: "2026-10-02T18:37:00-07:00"
 ---
 # Rule
 
-Every mission item with a position is inside the inclusion polygon of the plan's geofence
-(`plan.inside_geofence`). The mission request declares `failsafes.geofence_breach`, one of
-`actions` (`failsafe.geofence_breach`).
+Every mission item with a position, and every straight leg between them and back to Home, is
+inside the inclusion polygon of the plan's geofence (`plan.inside_geofence`). The return leg
+goes from the last item with a position to Home, because RTL flies back to the launch position.
+The mission request declares `failsafes.geofence_breach`, one of `actions`
+(`failsafe.geofence_breach`).
 
 On PX4, `GF_ACTION` sets the action. `px4_action` gives its value for each action: WARN is
 Warning, LOITER is Hold mode, RTL is Return mode, LAND is Land mode. The bundle does not allow

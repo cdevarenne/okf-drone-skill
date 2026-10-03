@@ -33,8 +33,8 @@
       "check_id": "plan.inside_geofence",
       "status": "fail",
       "concept_id": "failsafes/geofence-breach",
-      "evidence": "15 items; outside: [3, 4, 7, 8, 11, 12, 15]",
-      "message": "items [3, 4, 7, 8, 11, 12, 15] are outside the geofence"
+      "evidence": "15 items, 15 legs; items outside: 3, 4, 7, 8, 11, 12, 15; legs outside: 2-3, 3-4, 4-5, 6-7, 7-8, 8-9, 10-11, 11-12, 12-13, 14-15, 15-home",
+      "message": "the flight path leaves the geofence"
     },
     {
       "check_id": "failsafe.lost_link",

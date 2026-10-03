@@ -71,6 +71,36 @@ def test_waypoint_outside_the_geofence_fails() -> None:
     assert (r["status"], r["concept_id"]) == ("fail", "failsafes/geofence-breach")
 
 
+L_FENCE = [
+    [44.798, -0.602], [44.803, -0.602], [44.803, -0.601],
+    [44.799, -0.601], [44.799, -0.598], [44.798, -0.598],
+]  # fmt: skip
+
+
+def test_leg_outside_a_concave_geofence_fails() -> None:
+    """Review 2026-10-02: both points inside the L, the straight leg crosses the notch."""
+    r = run(
+        "inspection",
+        home={"lat": 44.7985, "lon": -0.6015, "amsl_m": 50},
+        geofence={"polygon": L_FENCE},
+        pattern={"route": [[44.8025, -0.6015], [44.7985, -0.5985]]},
+    )["plan.inside_geofence"]
+    assert r["status"] == "fail"
+    assert r["evidence"] == "3 items, 3 legs; items outside: none; legs outside: 2-3"
+
+
+def test_return_leg_to_home_is_checked() -> None:
+    """The RTL leg from the last waypoint back to Home crosses the notch."""
+    r = run(
+        "inspection",
+        home={"lat": 44.8025, "lon": -0.6015, "amsl_m": 50},
+        geofence={"polygon": L_FENCE},
+        pattern={"route": [[44.8020, -0.6015], [44.7985, -0.6015], [44.7985, -0.5985]]},
+    )["plan.inside_geofence"]
+    assert r["status"] == "fail"
+    assert r["evidence"].endswith("legs outside: 4-home")
+
+
 def test_missing_lost_link_action_fails() -> None:
     """Seeded m04."""
     failsafes = {"low_battery": "RTL", "critical_battery": "LAND", "geofence_breach": "RTL"}

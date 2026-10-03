@@ -12,6 +12,7 @@ from geometry import (
     grid,
     is_convex,
     on_boundary,
+    segment_inside,
 )
 
 SQUARE = [(0.0, 0.0), (100.0, 0.0), (100.0, 100.0), (0.0, 100.0)]
@@ -87,3 +88,18 @@ def test_expanding_square_legs() -> None:
 def test_expanding_square_rejects_bad_input(datum, spacing) -> None:
     with pytest.raises(GeometryError):
         expanding_square(SQUARE, datum, spacing)
+
+
+@pytest.mark.parametrize(
+    ("p", "q", "inside"),
+    [
+        ((10.0, 10.0), (40.0, 90.0), True),  # inside the vertical arm
+        ((25.0, 90.0), (90.0, 25.0), False),  # cuts the notch
+        ((10.0, 50.0), (90.0, 50.0), True),  # along the edge y = 50 of the notch
+        ((10.0, 10.0), (50.0, 50.0), True),  # ends at the reflex vertex
+        ((40.0, 60.0), (60.0, 40.0), True),  # through the reflex vertex, inside on both sides
+        ((10.0, 10.0), (110.0, 10.0), False),  # one end outside
+    ],
+)
+def test_segment_inside(p, q, inside) -> None:
+    assert segment_inside(L_SHAPE, p, q) is inside
