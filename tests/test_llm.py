@@ -176,3 +176,15 @@ def test_sdk_failure_is_an_llm_error(tmp_path: Path) -> None:
     with pytest.raises(LLMError, match="narrate: the API call failed: .*authentication"):
         llm.complete(REQUEST)
     assert not llm.cache.exists() and not llm.ledger.exists()
+
+
+def test_record_reuses_a_recorded_answer(tmp_path: Path) -> None:
+    """A second record run pays only for the answers that are not recorded yet."""
+    first = make(tmp_path, "record", FakeClient())
+    first.complete(REQUEST)
+    client = FakeClient()
+    again = make(tmp_path, "record", client)
+    again.cache = tmp_path / "other-cache"  # a new run: an empty cache, the same recorded answers
+    assert again.complete(REQUEST) == {"summary": "HOLD"}
+    assert client.calls == []
+    assert [e["billed"] for e in ledger(again)][-1] is False

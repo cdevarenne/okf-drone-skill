@@ -124,10 +124,15 @@ class LLM:
         return sum(e["cost_usd"] for e in entries if e["run_id"] == self.run_id)
 
     def complete(self, request: Request) -> Json:
-        """Return the JSON answer for `request`. Replay and cache hits cost nothing."""
+        """Return the JSON answer for `request`. Recorded answers and cache hits cost nothing.
+
+        Replay uses only recorded answers. Record uses a recorded answer if there is one, so a
+        second record run pays only for the answers that are not recorded yet.
+        """
         key = request.key(self.model)
-        if self.mode == "replay":
-            return self._recorded(request, key, self.fixtures / f"{key}.json", "no recorded answer")
+        fixture = self.fixtures / f"{key}.json"
+        if self.mode == "replay" or (self.mode == "record" and fixture.is_file()):
+            return self._recorded(request, key, fixture, "no recorded answer")
         hit = self.cache / f"{key}.json"
         if hit.is_file():
             return self._recorded(request, key, hit, "no cache entry")
