@@ -40,8 +40,10 @@ intake:  # optional LLM step (DRN-09); LLM_MODE=replay unless the owner sets it
 narrate:  # optional LLM step (DRN-09), after make plan; LLM_MODE=replay unless the owner sets it
 	uv run --extra llm python $(SCRIPTS)/narrate.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out
 
+LLM_EVAL_MODELS ?= claude-opus-5-5 claude-sonnet-5-5 claude-haiku-4-5  # the recorded models
+
 eval-llm:  # DRN-09 eval on missions/text and the seeded missions; replay unless the owner records
-	uv run --extra llm python $(SCRIPTS)/eval_llm.py
+	LLM_EVAL_MODELS="$(LLM_EVAL_MODELS)" uv run --extra llm python $(SCRIPTS)/eval_llm.py
 
 test:
 	uv run pytest -q
