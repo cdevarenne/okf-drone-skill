@@ -73,8 +73,12 @@ def render(
     bundle: Bundle,
     pins: dict[str, str],
     decision: Decision,
+    narrative: dict | None = None,
 ) -> str:
-    """Return report.md. The text has no time stamp, so the same inputs give the same file."""
+    """Return report.md. The text has no time stamp, so the same inputs give the same file.
+
+    `narrative` is a checked summary from narrate (DRN-09); without it the report is the v1 report.
+    """
     m = mission
     out: list[str] = []
     add = out.append
@@ -246,6 +250,14 @@ def render(
     add("")
     add("## 6. Decision")
     add("")
+    if narrative:
+        add("### Summary (model-written, checked)")
+        add("")
+        add(narrative["summary"])
+        add("")
+        for item in narrative["items"]:
+            add(f"- `{item['check_id']}`: {item['explanation']}")
+        add("")
     add("Rule (spec §5.5): NO-GO if a check fails; else HOLD if a check is a gap; else GO.")
     add("")
     for label, items in (("Failed", decision.fails), ("Gaps", decision.gaps)):
@@ -315,6 +327,23 @@ def started(path: Path) -> bool:
     )
 
 
+def inputs_sha256(out_dir: Path) -> str:
+    """Return the sha256 of validation.json then risk.json: what a narrative was written for."""
+    digest = hashlib.sha256()
+    for name in ("validation.json", "risk.json"):
+        digest.update((out_dir / name).read_bytes())
+    return digest.hexdigest()
+
+
+def current_narrative(out_dir: Path) -> dict | None:
+    """Return narrative.json if it was written for the current results, else None."""
+    path = out_dir / "narrative.json"
+    if not path.is_file():
+        return None
+    doc = json.loads(path.read_text(encoding="utf-8"))
+    return doc if doc.get("inputs_sha256") == inputs_sha256(out_dir) else None
+
+
 def write(mission: dict, out_dir: Path, bundle: Bundle, pins: dict[str, str]) -> Decision:
     """Write report.md and signoff.yaml in out_dir. Return the proposed decision."""
     if started(out_dir / "signoff.yaml"):
@@ -323,7 +352,8 @@ def write(mission: dict, out_dir: Path, bundle: Bundle, pins: dict[str, str]) ->
     validation = json.loads((out_dir / "validation.json").read_text(encoding="utf-8"))
     risk = json.loads((out_dir / "risk.json").read_text(encoding="utf-8"))
     d = decide(validation["checks"] + risk["checks"])
-    report = render(mission, json.loads(plan_text), validation, risk, bundle, pins, d)
+    narrative = current_narrative(out_dir)
+    report = render(mission, json.loads(plan_text), validation, risk, bundle, pins, d, narrative)
     (out_dir / "report.md").write_text(report, encoding="utf-8")
     text = signoff(mission["id"], d.value, _sha256(plan_text), _sha256(report))
     (out_dir / "signoff.yaml").write_text(text, encoding="utf-8")
