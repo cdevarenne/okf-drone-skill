@@ -15,6 +15,7 @@ from typing import Any
 from geometry import LocalFrame, centroid, expanding_square, grid
 from mission import MissionError, load_mission
 from okf_lib import Bundle, load_bundle
+from results import verified_concept
 
 # MAVLink enums for the .plan header (S9): MAV_AUTOPILOT_PX4 and MAV_TYPE_QUADROTOR.
 FIRMWARE_PX4 = 12
@@ -40,9 +41,9 @@ def read_pins(lock: Path) -> dict[str, str]:
 
 
 def _concept_table(bundle: Bundle, concept_id: str) -> dict[str, Any]:
-    concept = bundle.concepts.get(concept_id)
+    concept = verified_concept(bundle, concept_id)
     if concept is None:
-        raise GapError(f"gap: no concept {concept_id} in the bundle")
+        raise GapError(f"gap: no verified concept {concept_id} in the bundle")
     return dict(concept.table)
 
 

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
+from datetime import datetime
 from typing import Any
 
 from okf_lib import Bundle, Concept
@@ -25,9 +26,16 @@ class CheckResult:
 
 
 def is_verified(concept: Concept) -> bool:
-    """Return True if a person verified the concept (a `verified` entry by `human:...`)."""
+    """Return True if a person verified the concept at or after its last change (`generated.at`)."""
+    changed = _time(concept.frontmatter["generated"]["at"])
     entries = concept.frontmatter.get("verified") or []
-    return any(str(e.get("by", "")).startswith("human:") for e in entries)
+    return any(
+        str(e.get("by", "")).startswith("human:") and _time(e["at"]) >= changed for e in entries
+    )
+
+
+def _time(value: object) -> datetime:
+    return datetime.fromisoformat(str(value))
 
 
 def governing(bundle: Bundle, check_id: str) -> Concept | None:

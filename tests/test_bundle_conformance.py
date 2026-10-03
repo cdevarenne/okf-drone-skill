@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 import yaml
 from okf_lib import load_bundle
+from results import is_verified
 
 ROOT = Path(__file__).resolve().parents[1]
 KNOWLEDGE = ROOT / "knowledge"
@@ -150,5 +151,5 @@ def test_hazard_scores(concept) -> None:
 
 @pytest.mark.parametrize("concept", CONCEPTS, ids=lambda c: c.id)
 def test_every_concept_is_human_verified(concept) -> None:
-    verified = concept.frontmatter.get("verified") or []
-    assert any(str(e.get("by", "")).startswith("human:") for e in verified), concept.path
+    """A person verified the concept at or after its last change (`generated.at`)."""
+    assert is_verified(concept), concept.path

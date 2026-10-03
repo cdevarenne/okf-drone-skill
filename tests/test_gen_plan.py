@@ -6,6 +6,7 @@ from itertools import pairwise
 from pathlib import Path
 
 import pytest
+from bundle_helpers import unverified
 from gen_plan import GapError, build_plan, main, read_pins
 from geometry import LocalFrame, centroid, contains
 from jsonschema import Draft202012Validator
@@ -102,6 +103,12 @@ def test_missing_command_concept_is_a_gap() -> None:
     mission = load_mission(MISSIONS / "survey.yaml")
     with pytest.raises(GapError, match="mavlink/nav-rtl"):
         build_plan(mission, Bundle(concepts=concepts), PINS)
+
+
+def test_unverified_concept_is_a_gap() -> None:
+    mission = load_mission(MISSIONS / "survey.yaml")
+    with pytest.raises(GapError, match="no verified concept mavlink/nav-takeoff"):
+        build_plan(mission, unverified("mavlink/nav-takeoff"), PINS)
 
 
 def test_pattern_input_must_match_the_mission_type() -> None:
