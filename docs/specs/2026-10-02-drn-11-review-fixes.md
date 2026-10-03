@@ -1,7 +1,8 @@
 # okf-drone-skill DRN-11 — Adversarial review fixes
 
 - **Date:** 2026-10-02
-- **Status:** draft; the owner reviews it with the plan.
+- **Status:** implemented (2026-10-02): commits `afe6f93` to `afdb41d`. The owner verified the
+  changed concepts and read the m05 output. Open: the owner's SITL check of §3.6 (#48).
 - **Backlog:** DRN-11. **Issues:** #42 to #49.
 - **Base:** `docs/specs/2026-09-28-okf-drone-skill-v1-design.md` (v1). This spec changes three
   v1 rules (§3): the geofence check, the `category.operation` status for a specific mission,

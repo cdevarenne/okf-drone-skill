@@ -22,6 +22,7 @@ No flight controller, no live NOTAM or weather feeds in v1.
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
 | 5 | Screenshots, examples, "How this was built" | Done |
 | DRN-10 | Optional PX4 SITL flight check (`make px4`, `make sitl`) | Done, flown by the owner |
+| DRN-11 | Review fixes: `SKILL.md`, geofence legs, re-verification of a changed concept, ARC flag against the altitude | Done; changed concepts verified by the owner; SITL check open (#48) |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
 
@@ -62,8 +63,10 @@ signs; it is not an approval and does not change the proposed decision. See
   operational safety objectives (OSOs) are not in v1, so a 'specific' category mission is HOLD.
 - Every concept has a `# Source` section. It cites only documents with status `read` in
   [`docs/sources.md`](docs/sources.md). The conformance test enforces this.
-- Every concept has a `verified` entry from a person. The conformance test enforces this too.
-- A concept counts only if a person verified it; an unverified concept is a gap.
+- Every concept has a `verified` entry from a person, at or after its last change
+  (`generated.at`). The conformance test enforces this too.
+- A concept counts only if a person verified it after its last change. An unverified concept,
+  or a concept changed after its verification, is a gap.
 
 ## Seeded missions
 
@@ -158,7 +161,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
   AGL, FL600), the bundle keeps them and gives the metric value next to them.
 - **Human gates.** The owner read the sources (Phase 0), verified every concept (Phase 1), and
   reviewed the reports of the seeded missions m01 to m05 (Phase 4) before the next phase. A
-  concept that changed after its review was verified again (`risk/arc`, units). The owner
+  concept that changed after its review was verified again (`risk/arc`, units; in DRN-11,
+  `failsafes/geofence-breach` and `risk/arc`). The owner
   loaded a generated plan in QGroundControl (Phase 2). The owner flew m01 to m05 in PX4 SITL
   on an aarch64 Linux VM and got the same statuses as the prototype (DRN-10). The tool only proposes a decision; in
   the Phase 4 review, the owner filled `signoff.yaml` by hand.
@@ -170,6 +174,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - Airspace, NOTAM, TFR, weather and terrain are declared inputs. There is no live data.
 - The height check runs only on flat terrain; with varied terrain it is a gap.
 - The SORA OSO table is not in the bundle, so every specific-category mission is HOLD.
+- The airspace flags are the operator's claims. The only cross-check is in one direction: a
+  mission above 500 ft AGL (152.4 m) that declares `above_500ft_agl: false` fails.
 - The SORA mitigation levels and the adjacent-area limits are the operator's claims; the Annex
   B and Annex E criteria are not checked. The contingency volume and the ground risk buffer are
   not modelled.
@@ -189,6 +195,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - The SITL results in the report, and failsafe tests in SITL (for example a data-link loss).
 - The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
 - Terrain data, so that the height check can run on varied terrain.
+- A gap in `gen_plan` (for example a mission type with no concept) stops the run with no
+  report; a report for that case needs its own spec (DRN-11 spec §2.2).
 
 ## Pins
 
@@ -200,6 +208,7 @@ format versions, and the SORA edition.
 ```
 knowledge/                    OKF bundle
 missions/                     mission requests m01 to m05 and SEEDED.yaml
+.claude/skills/drone-mission-compliance/SKILL.md   the skill manifest
 .claude/skills/drone-mission-compliance/scripts/   okf_lib.py and the pipeline scripts
 .claude/skills/drone-mission-compliance/schemas/   mission request schema
 tests/                        unit and conformance tests
