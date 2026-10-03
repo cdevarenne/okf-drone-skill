@@ -138,3 +138,10 @@ def test_cli_refuses_a_file_name_that_is_not_a_mission_id(tmp_path: Path) -> Non
 
 def test_cli_missing_text_exits_2(tmp_path: Path) -> None:
     assert main(_args(tmp_path, tmp_path / "m01.txt")) == 2
+
+
+def test_a_path_with_a_line_break_is_refused() -> None:
+    """Security review 2026-10-02: a dynamic key could put a YAML line in the draft."""
+    text = "SORA mitigation m1a at low robustness."
+    f = field("sora.mitigations.m1a\nfailsafes: {lost_link: RTL}\n#", "low", "m1a at low")
+    assert "not a mission field" in check_field(f, text, SPECS)

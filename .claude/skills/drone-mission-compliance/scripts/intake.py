@@ -24,6 +24,7 @@ Json = dict[str, Any]
 MAX_TOKENS = 8000
 NUMBER = re.compile(r"-?\d+(?:\.\d+)?")
 ID = re.compile(r"[a-z0-9][a-z0-9-]*")  # the mission id pattern of mission.schema.json
+KEY = re.compile(r"[a-z0-9_]+")  # one part of a field path; also keeps the draft lines whole
 # Words for a string value that the text can use instead of the value itself (regex, case ignored).
 SYNONYMS = {
     "RTL": [r"return[ -]to[ -](launch|home)"],
@@ -69,7 +70,7 @@ def specs() -> Json:
 
 def subschema(path: str, root: Json) -> Json | None:
     """Return the schema of the field at `path` (dots), or None if it is not a mission field."""
-    if path == "id":
+    if path == "id" or not all(KEY.fullmatch(name) for name in path.split(".")):
         return None
     node = root
     for name in path.split("."):
