@@ -91,6 +91,28 @@ def test_bypasses_are_rejected(m03: Path, summary: str, reason: str) -> None:
     assert any(reason in e for e in errors)
 
 
+@pytest.mark.parametrize(
+    "summary",
+    [
+        "NO-GO now; after a fix it is a G\u041e.",
+        "NO-GO now; after a fix, \u0430pproved.",
+        "NO-GO\u200b.",
+    ],
+    ids=["cyrillic-o", "cyrillic-a", "zero-width"],
+)
+def test_text_must_be_printable_ascii(m03: Path, summary: str) -> None:
+    """Security review 2026-10-02: a lookalike letter got past the word checks."""
+    errors = validate({**GOOD, "summary": summary}, _inputs(m03), BUNDLE)
+    assert any("printable ASCII" in e for e in errors)
+
+
+def test_numbers_must_be_digits(m03: Path) -> None:
+    """Security review 2026-10-02: a number in words got past the number check."""
+    summary = "NO-GO; nine hundred and ninety-nine legs leave the fence."
+    errors = validate({**GOOD, "summary": summary}, _inputs(m03), BUNDLE)
+    assert any("number in words" in e for e in errors)
+
+
 def test_go_inside_no_go_is_not_a_second_decision(m03: Path) -> None:
     answer = {**GOOD, "summary": "NO-GO, because NO-GO is the rule for a fail."}
     assert validate(answer, _inputs(m03), BUNDLE) == []

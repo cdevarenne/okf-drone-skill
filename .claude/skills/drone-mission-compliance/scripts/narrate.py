@@ -32,6 +32,13 @@ APPROVAL_WORDS = re.compile(
     r"|\ballowed\b|\bacceptab\w*|\bsafe\b|(?<!non-)\bcompliant\b|\bok to fly\b",
     re.IGNORECASE,
 )
+PRINTABLE_ASCII = re.compile(r"[ -~]*")  # no lookalike letter, no invisible character
+NUMBER_WORDS = re.compile(
+    r"\b(zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen"
+    r"|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|thirty|forty|fifty|sixty|seventy"
+    r"|eighty|ninety|hundred|thousand|million|dozen)\b",
+    re.IGNORECASE,
+)
 NUMBER = re.compile(r"\d+(?:\.\d+)?")
 # One line of plain text: no line break (a heading or a table), no link, URL or HTML.
 FORMAT = re.compile(r"[\r\n]|\]\(|https?://|<")
@@ -47,7 +54,7 @@ Rules:
 - Use only numbers and concept ids that are in the results. Do not compute new numbers.
 - `items`: one entry for each check with the status fail or gap, and no other check:
   `check_id` and a one-sentence `explanation` of what failed or what knowledge is missing.
-- Plain text on one line: no line break, no link, no HTML.
+- Plain ASCII text on one line: no line break, no link, no HTML. Write numbers as digits.
 """
 
 
@@ -104,6 +111,10 @@ def validate(answer: Json, doc: Json, bundle: Bundle) -> list[str]:
         errors.append(f"decision word {', '.join(wrong)}; the proposed decision is {decision}")
     if m := APPROVAL_WORDS.search(text):
         errors.append(f"approval word {m.group(0)!r}")
+    if not all(PRINTABLE_ASCII.fullmatch(t) for t in texts):
+        errors.append("not printable ASCII (a lookalike or invisible character)")
+    if m := NUMBER_WORDS.search(text):
+        errors.append(f"number in words {m.group(0)!r}; write numbers as digits")
     if any(FORMAT.search(t) for t in texts):
         errors.append("not one line of plain text (line break, link, URL or HTML)")
     source = json.dumps(doc)

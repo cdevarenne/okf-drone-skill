@@ -145,6 +145,19 @@ The answer is accepted only if all these rules are true. One error rejects the w
 4. Each number in the text is in the input files.
 5. Each concept id in the text is in the input files.
 
+Added during the build (security review, 2026-10-02), so that the text cannot hide a word from
+the checks:
+
+6. A decision word in any case (go, no-go, hold) is the exact proposed decision in capitals.
+7. Each text is one line of printable ASCII: no line break (a heading or a table), no link,
+   URL or HTML, and no lookalike or invisible character.
+8. Numbers are digits; a number in words rejects the answer.
+
+**Limit.** These rules are word checks. They cannot catch a paraphrase that suggests approval
+(for example "the mission may fly"). The controls for this are the report layout and the
+person: the proposed decision of the deterministic rule is on the first lines of the report,
+the summary has the heading "Summary (model-written, checked)", and a person reads and signs.
+
 ## 6. LLM interface (`llm.py`)
 
 A copy of the template `llm.py`, reduced to what this spec uses:
