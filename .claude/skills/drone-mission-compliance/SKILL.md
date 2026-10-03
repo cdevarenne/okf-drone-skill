@@ -32,6 +32,10 @@ description: >
    change the mission request to make it pass.
 4. **SITL (optional).** Run `make sitl MISSION=missions/<id>.yaml` only when the owner asks.
    It needs PX4 in the owner's VM. A SITL result is evidence. It does not change the decision.
+5. **LLM steps (optional).** Run `make intake TEXT=missions/text/<id>.txt` or
+   `make narrate MISSION=missions/<id>.yaml` only when the owner asks. A paid run needs the
+   owner's API key and `LLM_MODE`; the default replays recorded answers. Never copy an intake
+   draft to `missions/`: a person completes and copies it.
 
 ## Sign-off
 

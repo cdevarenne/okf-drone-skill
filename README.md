@@ -22,6 +22,7 @@ No flight controller, no live NOTAM or weather feeds in v1.
 | 4 | `render_report`, `signoff.yaml`, the seeded missions m01 to m05 | Done, reviewed by the owner |
 | 5 | Screenshots, examples, "How this was built" | Done |
 | DRN-10 | Optional PX4 SITL flight check (`make px4`, `make sitl`) | Done, flown by the owner |
+| DRN-09 | Optional LLM steps: intake (mission text to a draft request), narrate (checked explanations in the report), eval | Done; eval texts reviewed and answers recorded by the owner |
 | DRN-11 | Review fixes: `SKILL.md`, geofence legs, re-verification of a changed concept, ARC flag against the altitude | Done; changed concepts verified, m01 flown again by the owner |
 
 The spec is [`docs/specs/2026-09-28-okf-drone-skill-v1-design.md`](docs/specs/2026-09-28-okf-drone-skill-v1-design.md).
@@ -53,6 +54,31 @@ the return, and the failsafe parameters that PX4 reads back. It writes `sitl.jso
 `sitl_track.json` and the PX4 logs in `out/<id>/`. The flight is evidence for the person who
 signs; it is not an approval and does not change the proposed decision. See
 [`docs/specs/2026-09-28-drn-10-px4-sitl.md`](docs/specs/2026-09-28-drn-10-px4-sitl.md).
+
+### Optional: LLM steps (DRN-09)
+
+Two steps that the owner runs, outside `make plan`. An LLM helps a person at the two ends of the
+pipeline. It never makes a check, a score or a decision.
+
+- `make intake TEXT=missions/text/<id>.txt` turns a plain-text mission description into
+  `out/<id>/mission.draft.yaml`. The LLM gives each field with a verbatim quote from the text.
+  Code keeps a field only if the quote is in the text, each number of the value is in the
+  quote, and a value that the bundle defines (a failsafe action, a mission type) is one of its
+  codes. The draft shows each quote and lists each field still to fill. A person completes it,
+  reads each quote, and copies it to `missions/`. The tool never writes there.
+- `make narrate MISSION=missions/<id>.yaml` (after `make plan`) adds one checked sentence for
+  each check that fails or is a gap, under "Explanations (model-written, checked)" in section
+  6 of the report. Code rejects the whole answer if it has a decision word, an approval word, a
+  number or a concept id that is not in the results, or text that is not one line of plain
+  ASCII. There is no free-text summary: a word check cannot catch a paraphrase.
+
+The default mode is `replay`: the answers come from `tests/fixtures/llm/`, and no call is made.
+A paid run needs `LLM_MODE=anthropic` (or `record`), an API key in the environment, and stays
+within `LLM_BUDGET_USD` (default 0.50 per run). Each call is in `out/llm-usage.jsonl`.
+`make eval-llm` runs both steps on the seeded missions and writes
+[`docs/data/drn-09-eval.json`](docs/data/drn-09-eval.json): for each text, the intake fields
+that are correct, wrong or missing; for each mission, whether narrate was accepted; and the
+recorded cost. See [`docs/specs/2026-10-02-drn-09-llm-steps.md`](docs/specs/2026-10-02-drn-09-llm-steps.md).
 
 ## How grounding works
 
@@ -182,17 +208,16 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - Multicopters only; convex areas; three patterns (grid, corridor, expanding square);
   `SimpleItem` mission items only.
 - EU rules only: no FAA Part 107, no national additions (for example DGAC).
-- No LLM step.
+- The LLM steps (DRN-09) are optional. Intake proves that the text states a value, not that
+  the writer meant it; narrate cannot catch a paraphrase. A person reads the draft and the
+  report.
 - PX4 SITL (optional) flies the SIH quadrotor only: no wind, no sensor faults, and no injected
   failsafe events.
 
 ## What's next
 
-- DRN-09: optional LLM steps that the owner runs, outside `make plan`: intake (mission text to
-  a draft request) and narrate (a checked summary in the report). The spec is
-  [`docs/specs/2026-10-02-drn-09-llm-steps.md`](docs/specs/2026-10-02-drn-09-llm-steps.md)
-  (approved); the plan is
-  [`docs/plans/2026-10-02-drn-09-llm-steps.md`](docs/plans/2026-10-02-drn-09-llm-steps.md).
+- The DRN-09 eval with other models (`LLM_EVAL_MODELS`), and eval texts written by other
+  people.
 - The SITL results in the report, and failsafe tests in SITL (for example a data-link loss).
 - The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
 - Terrain data, so that the height check can run on varied terrain.
@@ -216,7 +241,9 @@ tests/                        unit and conformance tests
 tests/fixtures/missions/      fixture mission requests (one per mission type)
 docs/specs/, docs/plans/      spec and phase plans
 docs/sources.md               source register
-docs/data/                    generated results (make seeded)
+docs/data/                    generated results (make seeded, make eval-llm)
+missions/text/                plain-text mission descriptions for the DRN-09 eval
+tests/fixtures/llm/           recorded LLM answers (replay)
 examples/                     generated output of m01 to m05 (make examples)
 docs/screenshots/             README images
 ```

@@ -1,7 +1,9 @@
 # okf-drone-skill DRN-09 — Optional LLM steps
 
 - **Date:** 2026-10-02
-- **Status:** approved by the owner (2026-10-02). Plan: `docs/plans/2026-10-02-drn-09-llm-steps.md`.
+- **Status:** implemented (2026-10-02). Plan: `docs/plans/2026-10-02-drn-09-llm-steps.md`. The
+  owner reviewed the eval texts and recorded the answers; the results are in
+  `docs/data/drn-09-eval.json`.
 - **Backlog:** DRN-09
 - **Base:** `docs/specs/2026-09-28-okf-drone-skill-v1-design.md` (v1). This spec adds two
   optional steps. It changes no v1 contract: `make plan` calls no LLM, and the decision rule
