@@ -74,6 +74,23 @@ def test_text_must_be_one_line_of_plain_text(m03: Path, summary: str) -> None:
     assert any("one line of plain text" in e for e in errors)
 
 
+@pytest.mark.parametrize(
+    ("summary", "reason"),
+    [
+        ("NO-GO now; after a fix it is a go.", "decision word"),
+        ("NO-GO now; it can hold later.", "decision word"),
+        ("NO-GO; a new fence makes it authorized.", "approval word"),
+        ("NO-GO; the rest is acceptable.", "approval word"),
+        ("NO-GO; otherwise safe.", "approval word"),
+        ("NO-GO under risk/ar.", "concept ids not in the input"),
+    ],
+)
+def test_bypasses_are_rejected(m03: Path, summary: str, reason: str) -> None:
+    """Security review 2026-10-02: case, synonyms and id prefixes got past the validator."""
+    errors = validate({**GOOD, "summary": summary}, _inputs(m03), BUNDLE)
+    assert any(reason in e for e in errors)
+
+
 def test_go_inside_no_go_is_not_a_second_decision(m03: Path) -> None:
     answer = {**GOOD, "summary": "NO-GO, because NO-GO is the rule for a fail."}
     assert validate(answer, _inputs(m03), BUNDLE) == []
