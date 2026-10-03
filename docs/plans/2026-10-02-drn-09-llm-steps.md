@@ -29,9 +29,9 @@ Haiku 4.5 1 / 5. Template: `okf-grc-skill/src/okf_grc/llm.py`.
   without the `llm` extra.
 - New scripts go in `.claude/skills/drone-mission-compliance/scripts/` (here `scripts/`).
 
-## Decisions for the owner (before Task 1)
+## Decisions (confirmed by the owner, 2026-10-02)
 
-The spec §9 lists eight decisions. The plan adds four:
+The spec §9 lists eight decisions. The plan adds four, which the owner confirmed:
 
 1. **Refusal fallback: off.** The API can run a refused request again on another model
    (`fallbacks`). The plan does not use it: a refusal is an error (spec §6), and an eval answer
