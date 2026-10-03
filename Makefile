@@ -35,7 +35,7 @@ sitl:
 	uv run --extra sitl python $(SCRIPTS)/sitl_fly.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out --px4-build $(PX4_BUILD)
 
 intake:  # optional LLM step (DRN-09); LLM_MODE=replay unless the owner sets it
-	uv run --extra llm python $(SCRIPTS)/intake.py --text $(TEXT) --lock tools.lock --out out
+	uv run --extra llm python $(SCRIPTS)/intake.py --text $(TEXT) --knowledge knowledge --lock tools.lock --out out
 
 narrate:  # optional LLM step (DRN-09), after make plan; LLM_MODE=replay unless the owner sets it
 	uv run --extra llm python $(SCRIPTS)/narrate.py --mission $(MISSION) --knowledge knowledge --lock tools.lock --out out

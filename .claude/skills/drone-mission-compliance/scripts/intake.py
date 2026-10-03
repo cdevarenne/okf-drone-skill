@@ -19,6 +19,7 @@ import yaml
 from jsonschema import Draft202012Validator
 from llm import LLM, LLMError, Request
 from mission import SCHEMA_PATH
+from okf_lib import Bundle, load_bundle
 
 Json = dict[str, Any]
 MAX_TOKENS = 8000
@@ -52,9 +53,43 @@ Rules:
   states the value. Copy the quote exactly.
 - Do not calculate. Do not convert units. A value with a number uses the number as written.
 - Coordinates are [latitude, longitude] in signed decimal degrees.
+- For a field in the code list below, the value is one of its codes, exactly as written. Use
+  the code that the quote states (for example "return to launch" is RTL).
+
+Codes (path: allowed values):
+{codes}
 
 Fields (path: JSON schema):
 """
+
+
+def value_sets(bundle: Bundle) -> dict[str, list[str]]:
+    """Return the allowed codes of the fields whose values come from the bundle, not the schema.
+
+    The same lists that validate_plan and score_risk use: the failsafe actions, the mission
+    types, the population bands of risk/igrc and the assemblies of risk/containment.
+    """
+    sets: dict[str, list[str]] = {}
+    for c in bundle.concepts.values():
+        t = c.table
+        if c.id.startswith("failsafes/") and "mission_key" in t:
+            sets[f"failsafes.{t['mission_key']}"] = list(t["actions"])
+        if "mission_keys" in t:
+            sets[f"failsafes.{t['mission_keys']['low']}"] = list(t["actions"])
+            sets[f"failsafes.{t['mission_keys']['critical']}"] = list(t["critical_actions"])
+    sets["mission_type"] = sorted(
+        cid.split("/", 1)[1] for cid in bundle.concepts if cid.startswith("mission-types/")
+    )
+    sets["ground.population_density"] = [
+        r["band"] for r in bundle.concepts["risk/igrc"].table["rows"]
+    ]
+    kinds = (
+        k["assemblies"]
+        for t in bundle.concepts["risk/containment"].table["tables"]
+        for k in t["columns"]
+    )
+    sets["sora.adjacent_area.assemblies"] = list(dict.fromkeys(kinds))
+    return sets
 
 
 def _resolve(node: Json, root: Json) -> Json:
@@ -109,8 +144,11 @@ def _states(quote: str, value: str) -> bool:
     return any(re.search(p, _words(quote)) for p in patterns)
 
 
-def check_field(field: Json, text: str, root: Json) -> str | None:
-    """Return the reason to drop the field, or None to accept it (spec §4.2)."""
+def check_field(field: Json, text: str, root: Json, sets: dict[str, list[str]]) -> str | None:
+    """Return the reason to drop the field, or None to accept it (spec §4.2).
+
+    `sets` are the bundle codes (value_sets): a field in it needs one of its codes.
+    """
     path, value, quote = field["path"], field["value"], field["quote"]
     schema = subschema(path, root)
     if schema is None:
@@ -118,6 +156,8 @@ def check_field(field: Json, text: str, root: Json) -> str | None:
     validator = Draft202012Validator({**schema, "$defs": root["$defs"]})
     if error := next(validator.iter_errors(value), None):
         return f"{path}: value not valid: {error.message}"
+    if path in sets and value not in sets[path]:
+        return f"{path}: {value!r} is not one of the bundle values {sets[path]}"
     if not quote.strip() or " ".join(quote.split()) not in " ".join(text.split()):
         return f"{path}: the quote is not in the text"
     in_quote = {float(n) for n in NUMBER.findall(quote)}
@@ -165,8 +205,8 @@ def _field_list(root: Json) -> str:
     return json.dumps({"properties": props, "$defs": root["$defs"]}, indent=1, sort_keys=True)
 
 
-def request(text: str) -> Request:
-    """Return the intake request: the stable rules and fields, then the text."""
+def request(text: str, sets: dict[str, list[str]]) -> Request:
+    """Return the intake request: the stable rules, codes and fields, then the text."""
     value = {
         "anyOf": [
             {"type": "string"},
@@ -193,13 +233,16 @@ def request(text: str) -> Request:
         "required": ["fields"],
         "additionalProperties": False,
     }
-    return Request("intake", SYSTEM + _field_list(specs()), text, schema, MAX_TOKENS)
+    codes = "\n".join(f'"{path}": {json.dumps(values)}' for path, values in sorted(sets.items()))
+    system = SYSTEM.format(codes=codes) + _field_list(specs())
+    return Request("intake", system, text, schema, MAX_TOKENS)
 
 
 def main(argv: list[str] | None = None) -> int:
     """Write out/<id>/mission.draft.yaml and intake.json. Return 0, or 2 if no answer."""
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--text", type=Path, required=True)
+    parser.add_argument("--knowledge", type=Path, required=True)
     parser.add_argument("--lock", type=Path, required=True)
     parser.add_argument("--out", type=Path, required=True)
     parser.add_argument("--fixtures", type=Path, default=Path("tests/fixtures/llm"))
@@ -217,13 +260,14 @@ def main(argv: list[str] | None = None) -> int:
     llm.fixtures = args.fixtures
     root = specs()
     try:
-        answer = llm.complete(request(text))
+        sets = value_sets(load_bundle(args.knowledge))
+        answer = llm.complete(request(text, sets))
     except LLMError as e:
         print(e, file=sys.stderr)
         return 2
     accepted, dropped = [], []
     for f in answer["fields"]:
-        if reason := check_field(f, text, root):
+        if reason := check_field(f, text, root, sets):
             dropped.append(f | {"reason": reason})
         else:
             accepted.append(f)

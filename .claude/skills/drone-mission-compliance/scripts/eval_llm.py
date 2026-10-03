@@ -67,16 +67,17 @@ def _cost(llm: LLM, request: Request) -> float:
 def eval_model(llm: LLM, args: argparse.Namespace) -> Json:
     """Return the intake and narrate results and the recorded cost for one model."""
     root, bundle, cost = intake.specs(), load_bundle(args.knowledge), 0.0
+    sets = intake.value_sets(bundle)
     intake_results = {}
     for text_file in sorted(args.texts.glob("*.txt")):
         text = text_file.read_text(encoding="utf-8")
-        req = intake.request(text)
+        req = intake.request(text, sets)
         try:
             answer = llm.complete(req)
         except LLMError as e:
             raise LLMError(f"{text_file.name}: {e}") from e
         cost += _cost(llm, req)
-        accepted = [f for f in answer["fields"] if intake.check_field(f, text, root) is None]
+        accepted = [f for f in answer["fields"] if intake.check_field(f, text, root, sets) is None]
         score = score_intake(accepted, load_mission(label_for(text_file, args.missions)))
         intake_results[text_file.stem] = score | {"dropped": len(answer["fields"]) - len(accepted)}
     narrate_results = {}

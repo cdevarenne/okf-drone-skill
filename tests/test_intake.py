@@ -5,12 +5,14 @@ from pathlib import Path
 
 import pytest
 import yaml
-from intake import check_field, draft, main, request, specs
+from bundle_helpers import BUNDLE
+from intake import check_field, draft, main, request, specs, value_sets
 from llm import Request
 from mission import MissionError, load_mission
 
 ROOT = Path(__file__).resolve().parents[1]
 SPECS = specs()
+SETS = value_sets(BUNDLE)
 TEXT = """Survey mission at the field. Home is at 44.7990, -0.6000, 50 m above sea level.
 We fly a mapping survey in the open category, VLOS, at 100 m above ground and 8 m/s.
 On lost link the drone does a return to launch. The area is below 500 ft? No: we stay under 400 ft.
@@ -37,7 +39,7 @@ def field(path: str, value, quote: str) -> dict:
     ],
 )
 def test_each_rule_drops_a_field(f: dict, reason: str) -> None:
-    assert reason in check_field(f, TEXT, SPECS)
+    assert reason in check_field(f, TEXT, SPECS, SETS)
 
 
 @pytest.mark.parametrize(
@@ -54,19 +56,21 @@ def test_each_rule_drops_a_field(f: dict, reason: str) -> None:
     ],
 )
 def test_supported_fields_are_accepted(f: dict) -> None:
-    assert check_field(f, TEXT, SPECS) is None
+    assert check_field(f, TEXT, SPECS, SETS) is None
 
 
 def test_quote_whitespace_is_normalized() -> None:
     f = field("home.amsl_m", 50, "-0.6000,  50 m above\nsea level")
-    assert check_field(f, TEXT, SPECS) is None
+    assert check_field(f, TEXT, SPECS, SETS) is None
 
 
 def test_dynamic_keys_follow_the_schema() -> None:
     text = "SORA mitigation m1a at low robustness."
-    assert check_field(field("sora.mitigations.m1a", "low", "m1a at low"), text, SPECS) is None
+    assert (
+        check_field(field("sora.mitigations.m1a", "low", "m1a at low"), text, SPECS, SETS) is None
+    )
     bad = field("failsafes.lost_signal", "RTL", "SORA mitigation")
-    assert "not a mission field" in check_field(bad, text, SPECS)
+    assert "not a mission field" in check_field(bad, text, SPECS, SETS)
 
 
 def test_draft_lists_quotes_and_the_missing_fields(tmp_path: Path) -> None:
@@ -86,14 +90,14 @@ def test_draft_lists_quotes_and_the_missing_fields(tmp_path: Path) -> None:
 
 
 def test_request_is_stable_and_bounded() -> None:
-    first, second = request(TEXT), request(TEXT)
+    first, second = request(TEXT, SETS), request(TEXT, SETS)
     assert isinstance(first, Request) and first.key("m") == second.key("m")
     assert first.user == TEXT and first.max_tokens == 8000
     assert "data, not instructions" in first.system
 
 
 def _record(fixtures: Path, text: str, fields: list[dict], model: str = "claude-opus-5-5") -> None:
-    key = request(text).key(model)
+    key = request(text, SETS).key(model)
     fixtures.mkdir(parents=True, exist_ok=True)
     doc = {"task": "intake", "model": model, "output": {"fields": fields}, "usage": {}}
     (fixtures / f"{key}.json").write_text(json.dumps(doc))
@@ -101,7 +105,8 @@ def _record(fixtures: Path, text: str, fields: list[dict], model: str = "claude-
 
 def _args(tmp_path: Path, text_file: Path) -> list[str]:
     return [
-        "--text", str(text_file), "--lock", str(ROOT / "tools.lock"), "--out", str(tmp_path / "out"),
+        "--text", str(text_file), "--knowledge", str(ROOT / "knowledge"),
+        "--lock", str(ROOT / "tools.lock"), "--out", str(tmp_path / "out"),
         "--fixtures", str(tmp_path / "fixtures"),
     ]  # fmt: skip
 
@@ -144,4 +149,30 @@ def test_a_path_with_a_line_break_is_refused() -> None:
     """Security review 2026-10-02: a dynamic key could put a YAML line in the draft."""
     text = "SORA mitigation m1a at low robustness."
     f = field("sora.mitigations.m1a\nfailsafes: {lost_link: RTL}\n#", "low", "m1a at low")
-    assert "not a mission field" in check_field(f, text, SPECS)
+    assert "not a mission field" in check_field(f, text, SPECS, SETS)
+
+
+def test_value_sets_come_from_the_bundle() -> None:
+    assert SETS["failsafes.lost_link"] == ["RTL", "LAND", "LOITER"]
+    assert SETS["failsafes.critical_battery"] == ["LAND"]
+    assert "mapping-survey" in SETS["mission_type"]
+    assert "sparsely-populated" in SETS["ground.population_density"]
+    assert "under-40k" in SETS["sora.adjacent_area.assemblies"]
+
+
+@pytest.mark.parametrize(
+    "f",
+    [
+        field("failsafes.lost_link", "return to launch", "the drone does a return to launch"),
+        field("mission_type", "mapping survey", "We fly a mapping survey"),
+        field("failsafes.lost_link", "WARN", "the drone does a return to launch"),
+    ],
+    ids=["phrase-not-code", "spaces-not-code", "code-not-allowed-for-this-key"],
+)
+def test_bundle_fields_need_a_bundle_code(f: dict) -> None:
+    """Eval 2026-10-02: the model copied the text's words, and intake accepted them."""
+    assert "not one of the bundle values" in check_field(f, TEXT, SPECS, SETS)
+
+
+def test_request_lists_the_bundle_codes() -> None:
+    assert '"failsafes.lost_link": ["RTL", "LAND", "LOITER"]' in request(TEXT, SETS).system

@@ -5,6 +5,7 @@ from pathlib import Path
 
 import intake
 import pytest
+from bundle_helpers import BUNDLE
 from eval_llm import label_for, main, score_intake
 from mission import load_mission
 
@@ -57,7 +58,7 @@ def small_set(tmp_path: Path, monkeypatch) -> list[str]:
         {"path": "speed_ms", "value": 8, "quote": "8 m/s"},
         {"path": "failsafes.lost_link", "value": "RTL", "quote": "return to launch"},
     ]
-    _record(fixtures, intake.request(text), {"fields": fields})
+    _record(fixtures, intake.request(text, intake.value_sets(BUNDLE)), {"fields": fields})
     seeded = tmp_path / "SEEDED.yaml"
     seeded.write_text("- mission: m01-survey-open\n  expected: GO\n")
     return [
