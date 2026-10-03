@@ -10,10 +10,10 @@
     },
     {
       "check_id": "category.operation",
-      "status": "pass",
+      "status": "not_applicable",
       "concept_id": "regulations/easa-open",
       "evidence": "category specific",
-      "message": "no open-category condition"
+      "message": "open category only"
     },
     {
       "check_id": "plan.first_item_takeoff",

@@ -60,7 +60,7 @@ def check_alt_max_agl(m: Mission, plan: Plan, c: Concept, bundle: Bundle) -> Che
 def check_category_operation(m: Mission, plan: Plan, c: Concept, bundle: Bundle) -> CheckResult:
     cid = "category.operation"
     if m["category"] != "open":
-        return result(c, cid, PASS, f"category {m['category']}", "no open-category condition")
+        return result(c, cid, NOT_APPLICABLE, f"category {m['category']}", "open category only")
     allowed, below = c.table["operations"], c.table["below_takeoff_mass_kg"]
     evidence = f"operation {m['operation']}; MTOM {m['ua']['mtom_kg']} kg"
     problems = []

@@ -28,7 +28,7 @@ Airspace, NOTAM, TFR and weather are **declared inputs** in v1. The tool does no
 | Check | Status | Concept | Evidence | Message |
 |---|---|---|---|---|
 | alt.max_agl | not_applicable | regulations/easa-open | category specific | open category only |
-| category.operation | pass | regulations/easa-open | category specific | no open-category condition |
+| category.operation | not_applicable | regulations/easa-open | category specific | open category only |
 | plan.first_item_takeoff | pass | mavlink/nav-takeoff | first item command 22 | the plan starts with a takeoff |
 | plan.last_item_return | pass | mavlink/nav-rtl | last item command 20; allowed [20, 21] | the plan ends with RTL or LAND |
 | plan.inside_geofence | pass | failsafes/geofence-breach | 23 items; outside: none | every item is inside the geofence |

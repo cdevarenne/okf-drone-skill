@@ -3,7 +3,7 @@
 mission_id: m05-specific-bvlos
 proposed_decision: HOLD
 plan_sha256: 4743831b92441c37a1e29841e210320ec33083045ba32e3fbfba0da638bf4a8a
-report_sha256: bd478279699b6a816aa950549bb2522cb266424e32a17df94b6c5a6459d1bf55
+report_sha256: 105cceb71a6cd37bc5b288c22d24e5e594e2a37b0c30a2e8c3f0cfd08a64040e
 approvals:
   - role: "Remote Pilot in Command (RPIC)"
     name: ""

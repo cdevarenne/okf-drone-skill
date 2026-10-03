@@ -51,7 +51,7 @@ def test_varied_terrain_is_a_gap_with_its_concept() -> None:
 def test_open_category_checks_do_not_apply_to_specific() -> None:
     results = run("specific")
     assert results["alt.max_agl"]["status"] == "not_applicable"
-    assert results["category.operation"]["status"] == "pass"
+    assert results["category.operation"]["status"] == "not_applicable"
 
 
 @pytest.mark.parametrize(
