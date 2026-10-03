@@ -191,7 +191,8 @@ the spec, one plan per phase, and one tracking issue and one commit per task.
 - DRN-09: optional LLM steps that the owner runs, outside `make plan`: intake (mission text to
   a draft request) and narrate (a checked summary in the report). The spec is
   [`docs/specs/2026-10-02-drn-09-llm-steps.md`](docs/specs/2026-10-02-drn-09-llm-steps.md)
-  (draft; the owner reviews it).
+  (approved); the plan is
+  [`docs/plans/2026-10-02-drn-09-llm-steps.md`](docs/plans/2026-10-02-drn-09-llm-steps.md).
 - The SITL results in the report, and failsafe tests in SITL (for example a data-link loss).
 - The OSO table (S2 Table 14) and its checks, so that a specific-category mission can be GO.
 - Terrain data, so that the height check can run on varied terrain.
