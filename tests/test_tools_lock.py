@@ -12,6 +12,7 @@ REQUIRED = {
     "QGC_RALLY_VERSION",
     "SORA_EDITION",
     "PX4_VERSION",
+    "LLM_MODEL",
 }
 
 
@@ -37,7 +38,7 @@ def test_okf_commit_is_full_sha() -> None:
 
 def test_qgc_versions_are_integers() -> None:
     lock = read_lock()
-    for key in REQUIRED - {"OKF_COMMIT", "SORA_EDITION", "PX4_VERSION"}:
+    for key in REQUIRED - {"OKF_COMMIT", "SORA_EDITION", "PX4_VERSION", "LLM_MODEL"}:
         assert lock[key].isdigit(), key
 
 
@@ -47,3 +48,7 @@ def test_sora_edition() -> None:
 
 def test_px4_version_is_a_release_tag() -> None:
     assert re.fullmatch(r"v\d+\.\d+\.\d+", read_lock()["PX4_VERSION"])
+
+
+def test_llm_model_is_a_claude_model_id() -> None:
+    assert re.fullmatch(r"claude-[a-z0-9-]+", read_lock()["LLM_MODEL"])
